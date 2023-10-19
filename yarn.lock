@@ -414,6 +414,11 @@
   resolved "https://registry.yarnpkg.com/@fal-works/esbuild-plugin-global-externals/-/esbuild-plugin-global-externals-2.1.2.tgz#c05ed35ad82df8e6ac616c68b92c2282bd083ba4"
   integrity sha512-cEee/Z+I12mZcFJshKcCqC8tuX5hG3s+d+9nZ3LabqKF1vKdF41B92pJVCBggjAGORAeOzyyDDKrZwIkLffeOQ==
 
+"@fancyapps/ui@^5.0.24":
+  version "5.0.24"
+  resolved "https://registry.yarnpkg.com/@fancyapps/ui/-/ui-5.0.24.tgz#bf2e5791d4d284a01f8b31f579d946a9238bd862"
+  integrity sha512-zdyQLVKY5G4q/l2a8H1p9w5gBfL+sgVOXogoOzREbavzzdDKnNNqBO21fnjxUj+GVmBM8kYSR6LeOYf1nYFhvA==
+
 "@grpc/grpc-js@^1.7.1":
   version "1.9.6"
   resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.9.6.tgz#c64a2db3cb1c73939d3d666fb1339775813c1cd8"
