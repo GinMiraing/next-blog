@@ -7,11 +7,11 @@ export const BasicSettings = {
 
 export const NavbarItems = [
   {
-    name: "Home",
+    name: "主页",
     link: "/",
   },
   {
-    name: "Post",
+    name: "友链",
     link: "/",
   },
 ];

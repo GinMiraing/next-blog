@@ -2,8 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --pink: #ff6b81;
+}
+
 html {
   font-family: "LXGW WenKai", sans-serif;
   font-size: 16px;
   scroll-behavior: smooth;
+}
+
+.markdown p {
+  @apply text-sm/6 sm:text-base/8;
+  margin: 1rem 0;
+  text-align: justify;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--pink);
 }

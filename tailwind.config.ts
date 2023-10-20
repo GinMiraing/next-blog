@@ -8,10 +8,10 @@ const config: Config = {
   theme: {
     extend: {
       textColor: {
-        pink: "#ff6b81",
+        pink: "var(--pink)",
       },
       colors: {
-        pink: "#ff6b81",
+        pink: "var(--pink)",
       },
     },
   },

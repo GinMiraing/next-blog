@@ -23,7 +23,7 @@ const Header = () => {
       <div className="flex h-16 w-full shrink-0 items-center justify-between px-4">
         <Link
           href="/"
-          className="hover:text-pink text-lg font-bold transition-colors"
+          className="text-lg font-bold transition-colors hover:text-pink"
         >
           {BasicSettings.name}
         </Link>
@@ -38,6 +38,7 @@ const Header = () => {
             className="h-12 w-full px-4"
           >
             <Link
+              onClick={() => setShowMenu(false)}
               className="flex h-full w-full items-center justify-center rounded py-2 transition-colors hover:bg-black/10"
               href={item.link}
             >
