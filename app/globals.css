@@ -12,12 +12,6 @@ html {
   scroll-behavior: smooth;
 }
 
-.markdown p {
-  @apply text-sm/6 sm:text-base/8;
-  margin: 1rem 0;
-  text-align: justify;
-}
-
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -33,4 +27,12 @@ pre {
   @apply text-sm/6 sm:text-base/7;
   padding: 1rem;
   overflow-x: auto;
+}
+
+.footnotes h2 {
+  display: none;
+}
+
+.footnotes a {
+  display: none;
 }
