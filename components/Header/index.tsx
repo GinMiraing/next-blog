@@ -31,7 +31,7 @@ const Header = () => {
           <Menu />
         </button>
       </div>
-      <div className="flex w-full flex-col items-center">
+      <div className="flex w-full grow flex-col items-center">
         {NavbarItems.map((item) => (
           <div
             key={item.name}
@@ -39,13 +39,22 @@ const Header = () => {
           >
             <Link
               onClick={() => setShowMenu(false)}
-              className="flex h-full w-full items-center justify-center rounded py-2 transition-colors hover:bg-black/10"
+              className="flex h-full w-full items-center justify-center rounded py-2 transition-colors hover:bg-black/10 hover:text-pink"
               href={item.link}
             >
               {item.name}
             </Link>
           </div>
         ))}
+      </div>
+      <div className="space-y-2 px-4 pb-4 pt-6 text-center text-sm">
+        <Link
+          className="transition-colors hover:text-pink"
+          href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
+        >
+          CC BY-NC-SA 4.0
+        </Link>
+        <p>©️ 2023 胤 版权所有</p>
       </div>
     </div>
   );
