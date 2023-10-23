@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --pink: #ff6b81;
+}
+
+html {
+  font-family: "LXGW WenKai", sans-serif;
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--pink);
+}
+
+pre {
+  font-family: ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Consolas",
+    "Liberation Mono", "Courier New", monospace;
+  @apply text-sm/6 sm:text-base/7;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.footnotes h2 {
+  display: none;
+}
+
+.footnotes a {
+  display: none;
+}

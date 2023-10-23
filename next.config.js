@@ -1,4 +1,21 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const { withContentlayer } = require("next-contentlayer");
 
-module.exports = nextConfig;
+const nextConfig = {
+  output: "standalone",
+  images: {
+    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.zengjunyin.com",
+      },
+      {
+        protocol: "https",
+        hostname: "article.biliimg.com",
+      },
+    ],
+  },
+};
+
+module.exports = withContentlayer(nextConfig);
