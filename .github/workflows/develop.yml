@@ -27,4 +27,4 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ginmiraing/nextblog:development
+            ginmiraing/nextblog:dev
