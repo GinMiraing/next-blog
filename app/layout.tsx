@@ -32,7 +32,9 @@ export default function RootLayout({
       </head>
       <body className="bg-[url('https://cdn.zengjunyin.com/9B54A4959F1F0AB9DDB324F5CE8195A5.png')] bg-fixed bg-repeat">
         <Header />
-        {children}
+        <main className="min-h-screen max-w-4xl rounded-sm bg-white pt-16 shadow sm:mx-16 sm:my-20 sm:min-h-0 sm:pt-0 lg:mx-auto">
+          {children}
+        </main>
       </body>
     </html>
   );

@@ -7,7 +7,7 @@ import { NavbarItems } from "@/lib/setting";
 const Footer = () => {
   return (
     <>
-      <hr />
+      <hr className="hidden sm:block" />
       <div className="mt-6 hidden items-end justify-between pb-6 text-sm sm:flex">
         <div className="space-y-2">
           <Link
