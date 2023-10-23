@@ -17,9 +17,10 @@ const mdxComponents: MDXComponents = {
       data-fancybox
       className="relative block h-60 w-full overflow-hidden sm:h-80"
       href={src as string}
-      target="_blank"
+      referrerPolicy="no-referrer"
     >
       <Image
+        referrerPolicy="no-referrer"
         priority
         src={`${src}@900w_450h_1c.webp` as string}
         alt={alt || ""}

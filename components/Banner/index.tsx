@@ -29,6 +29,7 @@ const Banner = () => {
               alt="avatar"
               className="object-cover object-center"
               layout="fill"
+              referrerPolicy="no-referrer"
             />
           </div>
         </div>
