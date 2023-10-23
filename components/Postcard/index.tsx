@@ -15,7 +15,7 @@ const Postcard: React.FC<{ post: Post }> = ({ post }) => {
       </Link>
       <p className="my-6 text-center text-sm">{post.date}</p>
       <Link
-        className="line-clamp-2 text-justify text-sm/6 transition-colors hover:text-pink sm:text-base/8"
+        className="line-clamp-2 text-justify text-sm/8 transition-colors hover:text-pink sm:text-base/8"
         href={post.url}
       >
         {post.description}
