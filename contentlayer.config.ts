@@ -1,5 +1,7 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
 
+import rehypeShiki from "rehype-shiki";
+
 export const Post = defineDocumentType(() => ({
   name: "Post",
   filePathPattern: "**/*.mdx",
@@ -18,4 +20,10 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
-export default makeSource({ contentDirPath: "posts", documentTypes: [Post] });
+export default makeSource({
+  contentDirPath: "posts",
+  documentTypes: [Post],
+  mdx: {
+    rehypePlugins: [[rehypeShiki, { theme: "monokai" }]],
+  },
+});
