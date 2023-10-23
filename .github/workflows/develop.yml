@@ -1,15 +1,15 @@
-name: Publish Production Docker Image
+name: Publish Development Docker Image
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - "main"
 
 jobs:
   build-and-push:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    environment: production
+    environment: development
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -27,5 +27,4 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ginmiraing/nextblog:${{ github.ref_name }}
-            ginmiraing/nextblog:latest
+            ginmiraing/nextblog:development
