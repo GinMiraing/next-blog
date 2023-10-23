@@ -14,7 +14,7 @@ const Postlist = () => {
     return allPosts.sort((a, b) => {
       return a.id < b.id ? 1 : -1;
     });
-  }, [allPosts]);
+  }, []);
 
   const route = useRouter();
   const searchParams = useSearchParams();

@@ -21,6 +21,10 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head>
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="upgrade-insecure-requests"
+        />
         <link
           rel="stylesheet"
           href="https://cdn.staticfile.org/lxgw-wenkai-webfont/1.7.0/lxgwwenkai-bold.min.css"
