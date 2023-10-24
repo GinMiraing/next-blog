@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 
 import { FriendsLinkItems } from "@/lib/setting";
@@ -15,7 +14,7 @@ const FriendsLink = () => {
           className="flex w-full rounded-sm px-4 py-4 transition-colors hover:bg-gray-100 hover:text-pink"
           href={item.link}
         >
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
+          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
             <img
               loading="lazy"
               onError={(e) => {
