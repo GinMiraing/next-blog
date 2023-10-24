@@ -7,6 +7,8 @@ import Markdown from "@/components/Markdown";
 
 import { allPosts } from "@/.contentlayer/generated";
 
+export const revalidate = 60;
+
 export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;
   const post = allPosts.find((post) => post._raw.flattenedPath === id);
