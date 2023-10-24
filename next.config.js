@@ -16,6 +16,10 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: true,
+    serverComponentsExternalPackages: ["mongoose"],
+  },
 };
 
 module.exports = withContentlayer(nextConfig);
