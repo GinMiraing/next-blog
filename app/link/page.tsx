@@ -2,6 +2,8 @@ import Banner from "@/components/Banner";
 import Footer from "@/components/Footer";
 import FriendsLink from "@/components/FriendsLink";
 
+export const revalidate = 60;
+
 export default function Page() {
   return (
     <>
