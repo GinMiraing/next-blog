@@ -11,6 +11,7 @@ const Footer = () => {
       <div className="mt-6 hidden items-end justify-between pb-6 text-sm sm:flex">
         <div className="space-y-2">
           <Link
+            target="_blank"
             className="transition-colors hover:text-pink"
             href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
           >
