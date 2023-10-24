@@ -45,7 +45,7 @@ const mdxComponents: MDXComponents = {
   sup: ({ children }) => <sup className="text-xs">[{children}]</sup>,
 
   p: ({ children }) => (
-    <p className="my-4 text-justify text-sm/8 sm:text-lg/8">{children}</p>
+    <p className="my-4 text-justify text-sm/8 sm:text-base/8">{children}</p>
   ),
 };
 
