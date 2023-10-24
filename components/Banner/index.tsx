@@ -6,14 +6,14 @@ import { BasicSettings } from "@/lib/setting";
 
 const Banner = () => {
   return (
-    <div className="relative h-60 w-full bg-slate-300 sm:h-72">
+    <div className="relative h-60 w-full bg-slate-300 sm:h-80">
       <Image
         src={
-          "https://article.biliimg.com/bfs/article/3d049dec31987e344637113719e5d0d0129000357.png@.webp"
+          "https://article.biliimg.com/bfs/article/fed9bd2053975d67b3d9ba0ce9d31592129000357.jpg@.webp"
         }
         layout="fill"
         alt="banner"
-        className="object-cover object-center"
+        className="object-cover object-bottom"
         referrerPolicy="no-referrer"
         priority
       />
