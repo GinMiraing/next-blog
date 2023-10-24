@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useMemo, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -16,19 +16,27 @@ const Postlist = () => {
     });
   }, []);
 
-  const route = useRouter();
   const searchParams = useSearchParams();
-  const pagesize = searchParams.get("pagesize") || "8";
+  const pagesize = searchParams.get("pagesize");
+
+  const pagesizeRef = useRef(pagesize ? parseInt(pagesize) : 7);
 
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState<Post[]>(
-    sortedPosts.slice(0, parseInt(pagesize)),
+    sortedPosts.slice(0, pagesizeRef.current),
   );
 
   const loadmoreHandler = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
     setLoading(true);
-    route.push(`/?pagesize=${parseInt(pagesize) + 8}`, { scroll: false });
-    setList(sortedPosts.slice(0, parseInt(pagesize) + 8));
+    pagesizeRef.current = pagesizeRef.current + 7;
+    window.history.replaceState(null, "", `/?pagesize=${pagesizeRef.current}`);
+    setList((prev) => [
+      ...prev,
+      ...sortedPosts.slice(pagesizeRef.current - 7, pagesizeRef.current),
+    ]);
     setLoading(false);
   };
 
@@ -44,7 +52,7 @@ const Postlist = () => {
       </div>
       <div
         className={cn("flex w-full justify-center py-6", {
-          hidden: loading || parseInt(pagesize) >= allPosts.length,
+          hidden: loading || pagesizeRef.current >= allPosts.length,
         })}
       >
         <button
@@ -56,7 +64,7 @@ const Postlist = () => {
       </div>
       <div
         className={cn("w-full py-6 text-center", {
-          hidden: loading || parseInt(pagesize) < allPosts.length,
+          hidden: loading || pagesizeRef.current < allPosts.length,
         })}
       >
         暂无更多...
