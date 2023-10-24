@@ -16,6 +16,7 @@ const FriendsLink = () => {
         >
           <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
             <img
+              loading="lazy"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   "https://www.cravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
