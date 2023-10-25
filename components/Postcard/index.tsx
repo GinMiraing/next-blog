@@ -8,7 +8,7 @@ const Postcard: React.FC<{ post: Post }> = ({ post }) => {
   return (
     <div className="flex w-full flex-col py-4">
       <Link
-        className="line-clamp-1 text-center text-xl font-bold transition-colors hover:text-pink"
+        className="line-clamp-1 text-center text-xl transition-colors hover:text-pink"
         href={post.url}
       >
         {post.title}

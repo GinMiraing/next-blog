@@ -27,11 +27,7 @@ export default function RootLayout({
         />
         <link
           rel="stylesheet"
-          href="https://cdn.staticfile.org/lxgw-wenkai-webfont/1.7.0/lxgwwenkai-bold.min.css"
-        />
-        <link
-          rel="stylesheet"
-          href="https://cdn.staticfile.org/lxgw-wenkai-webfont/1.7.0/lxgwwenkai-regular.min.css"
+          href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreen.min.css"
         />
       </head>
       <body className="bg-[url('https://cdn.zengjunyin.com/9B54A4959F1F0AB9DDB324F5CE8195A5.png')] bg-fixed bg-repeat">
