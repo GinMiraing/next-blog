@@ -8,57 +8,123 @@ import dayjs from "dayjs";
 
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connect();
-    const comments = await CommentModel.find();
+    const comments: {
+      _id: number;
+      nick: string;
+      email: string;
+      email_md5: string;
+      link: string;
+      content: string;
+      is_admin: boolean;
+      is_hidden: boolean;
+      parent_id: number;
+      reply_id: number;
+      reply_nick: string;
+      format_time: string;
+      path: string;
+    }[] = await CommentModel.find();
 
     return NextResponse.json({
-      comments,
+      data: comments.map((comment) => {
+        return {
+          id: comment._id,
+          nick: comment.nick,
+          email: comment.email,
+          emailMd5: comment.email_md5,
+          link: comment.link,
+          content: comment.content,
+          isAdmin: comment.is_admin,
+          isHidden: comment.is_hidden,
+          parentId: comment.parent_id,
+          replyId: comment.reply_id,
+          replyNick: comment.reply_nick,
+          formatTime: comment.format_time,
+          path: comment.path,
+        };
+      }),
     });
   } catch (error) {
     console.log(error);
-
     return new NextResponse("Get comment failed", { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   const data: {
-    username: string;
+    nick: string;
     email: string;
     link: string;
     content: String;
-    reply_to: String;
+    parentId: number;
+    replyId: number;
+    replyNick: string;
+    path: string;
   } = await req.json();
 
-  const { username, email, link, content, reply_to } = data;
+  const { nick, email, link, content, parentId, replyId, replyNick, path } =
+    data;
 
-  const email_md5 = MD5(email).toString();
-  const is_reply = reply_to.length > 0;
-  const created_at = dayjs(Date.now()).format("YYYY-MM-DD HH:mm:ss");
+  const emailMd5 = MD5(email).toString();
+
+  const nowTime = Date.now();
+  const formatTime = dayjs(nowTime).format("YYYY-MM-DD HH:mm:ss");
 
   const adminAuth = link === "GinMiraing";
 
   try {
     await connect();
 
-    const comment = await CommentModel.create({
-      username,
+    const comment: {
+      _id: number;
+      nick: string;
+      email: string;
+      email_md5: string;
+      link: string;
+      content: string;
+      is_admin: boolean;
+      is_hidden: boolean;
+      parent_id: number;
+      reply_id: number;
+      reply_nick: string;
+      format_time: string;
+      path: string;
+    } = await CommentModel.create({
+      _id: nowTime,
+      nick,
       email,
-      email_md5,
+      email_md5: emailMd5,
       link,
       content,
       is_admin: adminAuth ? true : false,
       is_hidden: false,
-      is_reply,
-      reply_to,
-      created_at,
+      parent_id: parentId,
+      reply_id: replyId,
+      reply_nick: replyNick,
+      format_time: formatTime,
+      path,
     });
     return NextResponse.json({
-      comment,
+      data: {
+        id: comment._id,
+        nick: comment.nick,
+        email: comment.email,
+        emailMd5: comment.email_md5,
+        link: comment.link,
+        content: comment.content,
+        isAdmin: comment.is_admin,
+        isHidden: comment.is_hidden,
+        parentId: comment.parent_id,
+        replyId: comment.reply_id,
+        replyNick: comment.reply_nick,
+        formatTime: comment.format_time,
+        path: comment.path,
+      },
     });
   } catch (error) {
+    console.log(error);
     return new NextResponse("Create comment failed", { status: 500 });
   }
 }

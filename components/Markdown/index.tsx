@@ -31,7 +31,7 @@ const mdxComponents: MDXComponents = {
   ),
 
   h2: ({ children }) => (
-    <h2 className="my-2 text-lg font-bold underline underline-offset-4 transition-colors">
+    <h2 className="my-2 text-lg underline underline-offset-4 transition-colors">
       # {children}
     </h2>
   ),
@@ -77,7 +77,7 @@ const Markdown: React.FC<{ post: Post }> = ({ post }) => {
 
   return (
     <div className="pb-4 pt-4 sm:pb-2">
-      <h1 className="mt-4 text-center text-xl font-bold">{post.title}</h1>
+      <h1 className="mt-4 text-center text-xl">{post.title}</h1>
       <p className="my-6 text-center text-sm">{post.date}</p>
       <div className="markdown">
         <MDXContent components={mdxComponents} />

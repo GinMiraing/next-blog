@@ -20,7 +20,7 @@ const Banner = () => {
       <div className="absolute bottom-0 z-10 h-32 w-full bg-gradient-to-t from-black/40 to-transparent"></div>
       <div className="absolute z-20 flex h-full w-full flex-col items-end justify-end p-6 sm:p-7">
         <div className="flex w-full items-end justify-end">
-          <p className="mr-6 text-xl font-bold text-white sm:text-2xl">
+          <p className="mr-6 text-xl text-white sm:text-2xl">
             {BasicSettings.description}
           </p>
           <div className="relative h-10 w-10 sm:h-12 sm:w-12">

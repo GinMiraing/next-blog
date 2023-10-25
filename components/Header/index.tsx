@@ -23,7 +23,7 @@ const Header = () => {
       <div className="flex h-16 w-full shrink-0 items-center justify-between px-4">
         <Link
           href="/"
-          className="text-lg font-bold transition-colors hover:text-pink"
+          className="text-lg transition-colors hover:text-pink"
         >
           {BasicSettings.name}
         </Link>
