@@ -8,6 +8,8 @@ import Image from "next/legacy/image";
 import Link from "next/link";
 import { useEffect } from "react";
 
+import Comments from "@/components/Comments";
+
 import { Post } from "@/.contentlayer/generated";
 
 const mdxComponents: MDXComponents = {
@@ -82,6 +84,7 @@ const Markdown: React.FC<{ post: Post }> = ({ post }) => {
       <div className="markdown">
         <MDXContent components={mdxComponents} />
       </div>
+      <Comments />
     </div>
   );
 };
