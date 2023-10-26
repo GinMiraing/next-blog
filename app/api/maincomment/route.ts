@@ -3,14 +3,18 @@ import { connect } from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 import MD5 from "crypto-js/md5";
-import CommentModel from "@/lib/models/comment";
+import MainCommentModel from "@/lib/models/MainComment";
 import dayjs from "dayjs";
 
 export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const path = searchParams.get("path") || "";
+
   try {
     await connect();
+
     const comments: {
       _id: number;
       nick: string;
@@ -20,12 +24,12 @@ export async function GET(req: NextRequest) {
       content: string;
       is_admin: boolean;
       is_hidden: boolean;
-      parent_id: number;
-      reply_id: number;
-      reply_nick: string;
       format_time: string;
       path: string;
-    }[] = await CommentModel.find();
+      relpy: number;
+    }[] = await MainCommentModel.find({
+      path,
+    });
 
     return NextResponse.json({
       data: comments.map((comment) => {
@@ -38,11 +42,9 @@ export async function GET(req: NextRequest) {
           content: comment.content,
           isAdmin: comment.is_admin,
           isHidden: comment.is_hidden,
-          parentId: comment.parent_id,
-          replyId: comment.reply_id,
-          replyNick: comment.reply_nick,
           formatTime: comment.format_time,
           path: comment.path,
+          reply: comment.relpy,
         };
       }),
     });
@@ -58,14 +60,10 @@ export async function POST(req: NextRequest) {
     email: string;
     link: string;
     content: String;
-    parentId: number;
-    replyId: number;
-    replyNick: string;
     path: string;
   } = await req.json();
 
-  const { nick, email, link, content, parentId, replyId, replyNick, path } =
-    data;
+  const { nick, email, link, content, path } = data;
 
   const emailMd5 = MD5(email).toString();
 
@@ -86,12 +84,10 @@ export async function POST(req: NextRequest) {
       content: string;
       is_admin: boolean;
       is_hidden: boolean;
-      parent_id: number;
-      reply_id: number;
-      reply_nick: string;
       format_time: string;
       path: string;
-    } = await CommentModel.create({
+      reply: number;
+    } = await MainCommentModel.create({
       _id: nowTime,
       nick,
       email,
@@ -100,9 +96,6 @@ export async function POST(req: NextRequest) {
       content,
       is_admin: adminAuth ? true : false,
       is_hidden: false,
-      parent_id: parentId,
-      reply_id: replyId,
-      reply_nick: replyNick,
       format_time: formatTime,
       path,
     });
@@ -116,11 +109,9 @@ export async function POST(req: NextRequest) {
         content: comment.content,
         isAdmin: comment.is_admin,
         isHidden: comment.is_hidden,
-        parentId: comment.parent_id,
-        replyId: comment.reply_id,
-        replyNick: comment.reply_nick,
         formatTime: comment.format_time,
         path: comment.path,
+        reply: comment.reply,
       },
     });
   } catch (error) {
