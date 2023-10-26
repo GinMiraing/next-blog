@@ -9,6 +9,9 @@ import dayjs from "dayjs";
 export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const parentId = parseInt(searchParams.get("parentId") || "0");
+
   try {
     await connect();
     const comments: {
@@ -25,7 +28,9 @@ export async function GET(req: NextRequest) {
       reply_nick: string;
       format_time: string;
       path: string;
-    }[] = await CommentModel.find();
+    }[] = await CommentModel.find({
+      parent_id: parentId,
+    }).sort({ _id: parentId === 0 ? -1 : 1 });
 
     return NextResponse.json({
       data: comments.map((comment) => {
