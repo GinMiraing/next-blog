@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import mongoose, { Schema } from "mongoose";
 
 const MainCommentSchema = new Schema(
@@ -11,10 +10,6 @@ const MainCommentSchema = new Schema(
     content: { type: String, required: true },
     is_admin: Boolean,
     is_hidden: Boolean,
-    format_time: {
-      type: String,
-      default: dayjs(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-    },
     path: { type: String, required: true, default: "" },
     relpy: { type: Number, default: 0 },
   },

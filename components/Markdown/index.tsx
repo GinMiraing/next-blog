@@ -4,13 +4,14 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import type { MDXComponents } from "mdx/types";
 import { useMDXComponent } from "next-contentlayer/hooks";
+import dynamic from "next/dynamic";
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { useEffect } from "react";
 
-import Comments from "@/components/Comments";
-
 import { Post } from "@/.contentlayer/generated";
+
+const Comments = dynamic(() => import("@/components/Comments"));
 
 const mdxComponents: MDXComponents = {
   a: ({ href, children }) => <Link href={href as string}>{children}</Link>,

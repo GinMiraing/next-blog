@@ -21,6 +21,15 @@ html {
   background-color: var(--pink);
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 pre {
   font-family: ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Consolas",
     "Liberation Mono", "Courier New", monospace;
@@ -35,4 +44,8 @@ pre {
 
 .footnotes a {
   display: none;
+}
+
+.comments-content p {
+  @apply text-justify text-sm/6 sm:text-base/7;
 }

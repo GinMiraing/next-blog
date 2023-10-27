@@ -2,7 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
+import Image from "next/legacy/image";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -73,11 +75,37 @@ const CommentsProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const replyBtnHandler = (
+  setReplyData: React.Dispatch<
+    React.SetStateAction<{
+      isReply: boolean;
+      nick: string;
+      parentId: number;
+      replyId: number;
+      content: string;
+    }>
+  >,
+  comment: MainCommentType | ReplyCommentType,
+  parenId: number,
+) => {
+  setReplyData({
+    isReply: true,
+    nick: comment.nick,
+    parentId: parenId,
+    replyId: comment.id,
+    content: comment.content,
+  });
+  const contentDOM = document.getElementById("content");
+  if (contentDOM) {
+    contentDOM.focus();
+  }
+};
+
 const Comments = () => {
   const [refresh, setRefresh] = useState(true);
 
   return (
-    <div className="py-4">
+    <div className="comments py-4">
       <h2 className="inline-block bg-red-100 px-2 text-lg">评论</h2>
       <CommentsProvider>
         <CommentsInputForm setRefresh={setRefresh} />
@@ -158,13 +186,18 @@ const CommentsInputForm: React.FC<{
     }
   };
 
+  const textareaInputHandler = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    e.currentTarget.style.height = "0px";
+    e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+  };
+
   return (
-    <div className="flex flex-col">
+    <div className="my-6 flex flex-col">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="w-full">
           {replyData.isReply && (
             <>
-              <div>
+              <div className="text-sm sm:text-base">
                 你正在回复：{" "}
                 <a
                   className="transition-colors hover:text-pink"
@@ -174,7 +207,7 @@ const CommentsInputForm: React.FC<{
                 </a>
               </div>
               <div
-                className="mt-4 border-l-4 border-pink pl-4"
+                className="mt-4 border-l-4 border-pink pl-4 text-sm sm:text-base"
                 dangerouslySetInnerHTML={{
                   __html: `<p>${replyData.content.replace(/\n/g, "<br/>")}</p>`,
                 }}
@@ -182,8 +215,10 @@ const CommentsInputForm: React.FC<{
             </>
           )}
           <textarea
+            placeholder="请填写评论内容"
             id="content"
-            className="mt-4 min-h-[6rem] w-full whitespace-pre rounded-sm border p-2 outline-none"
+            onInput={(e) => textareaInputHandler(e)}
+            className="mt-4 h-10 w-full overflow-hidden whitespace-pre-wrap rounded-sm border p-2 text-sm/6 outline-none placeholder:text-xs/6 sm:text-base sm:placeholder:text-sm/6"
             {...register("content")}
           ></textarea>
         </div>
@@ -196,7 +231,7 @@ const CommentsInputForm: React.FC<{
                 </label>
               </div>
               <input
-                className="w-10 grow rounded-sm border px-2 py-1 outline-none"
+                className="w-10 grow border px-2 py-1 text-sm outline-none sm:text-base"
                 type="text"
                 {...register("nick")}
               />
@@ -208,7 +243,7 @@ const CommentsInputForm: React.FC<{
                 </label>
               </div>
               <input
-                className="w-10 grow border px-2 py-1 outline-none placeholder:text-sm"
+                className="w-10 grow border px-2 py-1 text-sm outline-none placeholder:text-xs sm:text-base sm:placeholder:text-sm"
                 placeholder="用于邮件通知"
                 type="text"
                 {...register("email")}
@@ -219,7 +254,7 @@ const CommentsInputForm: React.FC<{
                 <label>网站</label>
               </div>
               <input
-                className="w-10 grow rounded-sm border px-2 py-1 outline-none placeholder:text-sm"
+                className="w-10 grow border px-2 py-1 text-sm outline-none placeholder:text-sm sm:text-base"
                 type="text"
                 {...register("link")}
               />
@@ -321,86 +356,32 @@ const ParentCommentsItem: React.FC<{ comment: MainCommentType }> = ({
   const [show, setShow] = useState<"show" | "hide" | "init">("init");
   const { setReplyData } = useComments();
 
-  const replyBtnHandler = () => {
-    setReplyData({
-      isReply: true,
-      nick: comment.nick,
-      parentId: comment.id,
-      replyId: comment.id,
-      content: comment.content,
-    });
-    const contentDOM = document.getElementById("content");
-    if (contentDOM) {
-      contentDOM.focus();
-    }
-  };
-
   return (
     <>
-      <div
-        className="w-full"
-        id={comment.id.toString()}
-      >
-        <div className="flex w-full">
-          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full shadow">
-            <img
-              src={`https://cravatar.cn/avatar/${comment.emailMd5}`}
-              alt={comment.emailMd5}
-              loading="lazy"
-            />
-          </div>
-          <div className="ml-4 flex grow flex-col">
-            <div className="flex items-center">
-              {comment.link ? (
-                <a
-                  className="text-lg transition-colors hover:text-pink"
-                  href={comment.link}
-                  target="_blank"
-                >
-                  {comment.nick}
-                </a>
-              ) : (
-                <div className="text-xl">{comment.nick}</div>
-              )}
-              <div className="ml-4 text-xs">
-                <div>{comment.formatTime}</div>
-              </div>
-            </div>
-            <div
-              className="my-3 w-full rounded-md bg-red-50 px-2 py-4"
-              dangerouslySetInnerHTML={{
-                __html: `<p>${comment.content.replace(/\n/g, "<br/>")}</p>`,
-              }}
-            ></div>
-            <div className="flex justify-between">
-              <button
-                onClick={() =>
-                  setShow(
-                    show === "init"
-                      ? "show"
-                      : show === "show"
-                      ? "hide"
-                      : "show",
-                  )
-                }
-                className={cn("transition-colors hover:text-pink", {
-                  invisible: comment.reply === 0,
-                })}
-              >
-                {show === "init" || show === "hide"
-                  ? `展开回复（${comment.reply}）`
-                  : "收起回复"}
-              </button>
-              <button
-                onClick={() => replyBtnHandler()}
-                className="transition-colors hover:text-pink"
-              >
-                回复
-              </button>
-            </div>
-          </div>
+      <BaseCommentItem comment={comment}>
+        <div className="flex justify-between text-sm sm:text-base">
+          <button
+            onClick={() =>
+              setShow(
+                show === "init" ? "show" : show === "show" ? "hide" : "show",
+              )
+            }
+            className={cn("transition-colors hover:text-pink", {
+              invisible: comment.reply === 0,
+            })}
+          >
+            {show === "init" || show === "hide"
+              ? `展开回复（${comment.reply}）`
+              : "收起回复"}
+          </button>
+          <button
+            onClick={() => replyBtnHandler(setReplyData, comment, comment.id)}
+            className="transition-colors hover:text-pink"
+          >
+            回复
+          </button>
         </div>
-      </div>
+      </BaseCommentItem>
       {show !== "init" && (
         <div
           className={cn("ml-14 mt-6 space-y-4", {
@@ -474,22 +455,38 @@ const ReplyCommentsItem: React.FC<{
   comment: ReplyCommentType;
   parentId: number;
 }> = ({ comment, parentId }) => {
-  const pathname = usePathname();
   const { setReplyData } = useComments();
 
-  const replyBtnHandler = () => {
-    setReplyData({
-      isReply: true,
-      nick: comment.nick,
-      parentId: parentId,
-      replyId: comment.id,
-      content: comment.content,
-    });
-    const contentDOM = document.getElementById("content");
-    if (contentDOM) {
-      contentDOM.focus();
-    }
+  return (
+    <BaseCommentItem comment={comment}>
+      <div className="flex justify-end text-sm sm:text-base">
+        <button
+          onClick={() => replyBtnHandler(setReplyData, comment, parentId)}
+          className="transition-colors hover:text-pink"
+        >
+          回复
+        </button>
+      </div>
+    </BaseCommentItem>
+  );
+};
+
+const BaseCommentItem: React.FC<{
+  children: React.ReactNode;
+  comment: {
+    id: number;
+    nick: string;
+    emailMd5: string;
+    link: string;
+    content: string;
+    isAdmin: boolean;
+    isHidden: boolean;
+    reply?: number;
+    replyId?: number;
+    replyNick?: string;
   };
+}> = ({ children, comment }) => {
+  const pathname = usePathname();
 
   return (
     <div
@@ -497,47 +494,52 @@ const ReplyCommentsItem: React.FC<{
       id={comment.id.toString()}
     >
       <div className="flex w-full">
-        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full shadow">
-          <img
+        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border-2 bg-blue-100">
+          <Image
             src={`https://cravatar.cn/avatar/${comment.emailMd5}`}
             alt={comment.emailMd5}
-            loading="lazy"
+            className="h-full w-full object-cover object-center"
+            layout="fill"
           />
         </div>
-        <div className="ml-4 flex grow flex-col">
-          <div className="flex items-center">
+        <div className="ml-4 flex w-full flex-col overflow-hidden">
+          <div className="no-scrollbar flex items-center space-x-2 overflow-scroll sm:space-x-3">
             {comment.link ? (
               <a
-                className="text-lg transition-colors hover:text-pink"
+                className="whitespace-nowrap text-lg transition-colors hover:text-pink"
                 href={comment.link}
                 target="_blank"
               >
                 {comment.nick}
               </a>
             ) : (
-              <div className="text-xl">{comment.nick}</div>
+              <div className="whitespace-nowrap text-lg">{comment.nick}</div>
             )}
-            <div className="ml-4 text-xs">
-              <div>{comment.formatTime}</div>
+            <div className="whitespace-nowrap text-xs">
+              <div>{dayjs(comment.id).format("YYYY-MM-DD HH:mm:ss")}</div>
             </div>
+            {comment.isAdmin && (
+              <div className="whitespace-nowrap rounded-md bg-blue-100 px-1.5 text-sm">
+                博主
+              </div>
+            )}
           </div>
           <div
-            className="my-3 w-full rounded-md bg-red-50 px-2 py-4"
-            dangerouslySetInnerHTML={{
-              __html: `<p>${
-                comment.replyNick &&
-                `<a class="hover:text-pink bg-yellow-200 transition-colors" href="${pathname}#${comment.replyId}">@${comment.replyNick}</a> `
-              }${comment.content.replace(/\n/g, "<br/>")}</p>`,
-            }}
+            className="comments-content my-3 w-full rounded-md bg-red-50 px-2 py-4 sm:px-4"
+            dangerouslySetInnerHTML={
+              comment.replyNick
+                ? {
+                    __html: `<p>${
+                      comment.replyNick &&
+                      `<a class="hover:text-pink bg-yellow-200 transition-colors" href="${pathname}#${comment.replyId}">@${comment.replyNick}</a> `
+                    }${comment.content.replace(/\n/g, "<br/>")}</p>`,
+                  }
+                : {
+                    __html: `<p>${comment.content.replace(/\n/g, "<br/>")}</p>`,
+                  }
+            }
           ></div>
-          <div className="flex justify-end">
-            <button
-              onClick={() => replyBtnHandler()}
-              className="transition-colors hover:text-pink"
-            >
-              回复
-            </button>
-          </div>
+          {children}
         </div>
       </div>
     </div>
