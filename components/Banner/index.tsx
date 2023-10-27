@@ -1,8 +1,22 @@
+"use client";
+
+import { Sun } from "lucide-react";
 import Image from "next/legacy/image";
 
 import { BasicSettings } from "@/lib/setting";
 
-const Banner = () => {
+const Banner: React.FC = () => {
+  const changeTheme = () => {
+    const html = document.querySelector("html");
+    if (html) {
+      if (html.classList.contains("dark")) {
+        html.classList.remove("dark");
+      } else {
+        html.classList.add("dark");
+      }
+    }
+  };
+
   return (
     <div className="relative h-60 w-full bg-slate-300 sm:h-80">
       <Image
@@ -32,6 +46,12 @@ const Banner = () => {
           </div>
         </div>
       </div>
+      <button
+        onClick={() => changeTheme()}
+        className="absolute right-6 top-6 z-20 hidden text-white hover:text-pink sm:block"
+      >
+        <Sun />
+      </button>
     </div>
   );
 };

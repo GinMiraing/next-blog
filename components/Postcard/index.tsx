@@ -6,14 +6,14 @@ const Postcard: React.FC<{ post: Post }> = ({ post }) => {
   return (
     <div className="flex w-full flex-col py-4">
       <Link
-        className="line-clamp-1 text-center text-xl transition-colors hover:text-pink"
+        className="line-clamp-1 text-center text-xl hover:text-pink"
         href={post.url}
       >
         {post.title}
       </Link>
       <p className="my-6 text-center text-sm">{post.date}</p>
       <Link
-        className="line-clamp-2 text-justify text-sm/8 transition-colors hover:text-pink sm:text-base/8"
+        className="line-clamp-2 text-justify text-sm/8 hover:text-pink sm:text-base/8"
         href={post.url}
       >
         {post.description}

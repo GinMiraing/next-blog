@@ -34,9 +34,7 @@ const mdxComponents: MDXComponents = {
   ),
 
   h2: ({ children }) => (
-    <h2 className="my-2 text-lg underline underline-offset-4 transition-colors">
-      # {children}
-    </h2>
+    <h2 className="my-2 text-lg underline underline-offset-4"># {children}</h2>
   ),
 
   blockquote: ({ children }) => (
