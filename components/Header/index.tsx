@@ -1,22 +1,45 @@
 "use client";
 
+import axios from "axios";
 import { Menu, Sun } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { BasicSettings, NavbarItems } from "@/lib/setting";
 import { cn } from "@/lib/utils";
 
 const Header: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
+  const loadingRef = useRef(false);
 
-  const changeTheme = () => {
+  const changeTheme = async () => {
     const html = document.querySelector("html");
     if (html) {
-      if (html.classList.contains("dark")) {
-        html.classList.remove("dark");
-      } else {
-        html.classList.add("dark");
+      loadingRef.current = true;
+      try {
+        if (html.classList.contains("dark")) {
+          html.classList.remove("dark");
+          await axios({
+            url: "/api/theme",
+            method: "POST",
+            data: {
+              theme: "light",
+            },
+          });
+        } else {
+          html.classList.add("dark");
+          await axios({
+            url: "/api/theme",
+            method: "POST",
+            data: {
+              theme: "dark",
+            },
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        loadingRef.current = false;
       }
     }
   };
@@ -40,6 +63,7 @@ const Header: React.FC = () => {
         </Link>
         <div className="flex items-center space-x-4">
           <button
+            disabled={loadingRef.current}
             onClick={() => changeTheme()}
             className="hover:text-pink"
           >

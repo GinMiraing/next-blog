@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
 import { BasicSettings } from "@/lib/setting";
 
@@ -18,10 +19,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStorage = cookies();
+  const theme = cookieStorage.get("theme");
+
   return (
     <html
       lang="zh-CN"
-      className="dark"
+      className={theme ? theme.value : "light"}
     >
       <head>
         <meta
