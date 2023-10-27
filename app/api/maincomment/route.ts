@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import MD5 from "crypto-js/md5";
 import MainCommentModel from "@/lib/models/MainComment";
-import dayjs from "dayjs";
+import { MainCommentType } from "@/lib/types";
 
 export const revalidate = 0;
 
@@ -24,26 +24,22 @@ export async function GET(req: NextRequest) {
       content: string;
       is_admin: boolean;
       is_hidden: boolean;
-      format_time: string;
       path: string;
       relpy: number;
     }[] = await MainCommentModel.find({
       path,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<{ data: MainCommentType[] }>({
       data: comments.map((comment) => {
         return {
           id: comment._id,
           nick: comment.nick,
-          email: comment.email,
           emailMd5: comment.email_md5,
           link: comment.link,
           content: comment.content,
           isAdmin: comment.is_admin,
           isHidden: comment.is_hidden,
-          formatTime: comment.format_time,
-          path: comment.path,
           reply: comment.relpy,
         };
       }),
@@ -66,11 +62,7 @@ export async function POST(req: NextRequest) {
   const { nick, email, link, content, path } = data;
 
   const emailMd5 = MD5(email).toString();
-
-  const nowTime = Date.now();
-  const formatTime = dayjs(nowTime).format("YYYY-MM-DD HH:mm:ss");
-
-  const adminAuth = link === "GinMiraing";
+  const adminAuth = link === "https://blog.zengjunyin.com";
 
   try {
     await connect();
@@ -84,11 +76,10 @@ export async function POST(req: NextRequest) {
       content: string;
       is_admin: boolean;
       is_hidden: boolean;
-      format_time: string;
       path: string;
       reply: number;
     } = await MainCommentModel.create({
-      _id: nowTime,
+      _id: Date.now(),
       nick,
       email,
       email_md5: emailMd5,
@@ -96,21 +87,17 @@ export async function POST(req: NextRequest) {
       content,
       is_admin: adminAuth ? true : false,
       is_hidden: false,
-      format_time: formatTime,
       path,
     });
-    return NextResponse.json({
+    return NextResponse.json<{ data: MainCommentType }>({
       data: {
         id: comment._id,
         nick: comment.nick,
-        email: comment.email,
         emailMd5: comment.email_md5,
         link: comment.link,
         content: comment.content,
         isAdmin: comment.is_admin,
         isHidden: comment.is_hidden,
-        formatTime: comment.format_time,
-        path: comment.path,
         reply: comment.reply,
       },
     });
