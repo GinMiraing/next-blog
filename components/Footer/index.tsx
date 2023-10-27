@@ -2,15 +2,15 @@ import Link from "next/link";
 
 import { NavbarItems } from "@/lib/setting";
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
     <>
-      <hr className="hidden sm:block" />
+      <hr className="hidden border-dashed border-slate-300 dark:border-neutral-500 sm:block" />
       <div className="mt-6 hidden items-end justify-between pb-6 text-sm sm:flex">
         <div className="space-y-2">
           <Link
             target="_blank"
-            className="transition-colors hover:text-pink"
+            className="hover:text-pink"
             href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
           >
             CC BY-NC-SA 4.0
@@ -22,7 +22,7 @@ const Footer = () => {
             <Link
               key={item.name}
               href={item.link}
-              className="underline-offset-4 transition-colors hover:text-pink hover:underline"
+              className="underline-offset-4 hover:text-pink hover:underline"
             >
               {item.name}
             </Link>

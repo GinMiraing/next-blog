@@ -22,7 +22,7 @@ const Postlist: React.FC<{ children: React.ReactNode; totalPosts: number }> = ({
       {pagesizeInt < totalPosts && (
         <div className="flex w-full justify-center py-6">
           <button
-            className="transition-colors hover:text-pink"
+            className="hover:text-pink"
             onClick={() => loadmoreHandler()}
           >
             加载更多

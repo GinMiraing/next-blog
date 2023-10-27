@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
 import { BasicSettings } from "@/lib/setting";
 
@@ -18,8 +19,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStorage = cookies();
+  const theme = cookieStorage.get("theme");
+
   return (
-    <html lang="zh-CN">
+    <html
+      lang="zh-CN"
+      className={theme ? theme.value : "light"}
+    >
       <head>
         <meta
           httpEquiv="Content-Security-Policy"
@@ -30,9 +37,9 @@ export default function RootLayout({
           href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreen.min.css"
         />
       </head>
-      <body className="bg-[url('https://cdn.zengjunyin.com/9B54A4959F1F0AB9DDB324F5CE8195A5.png')] bg-fixed bg-repeat">
+      <body className="bg-[#f0e9dc] text-[#313135] dark:bg-neutral-800 dark:text-[#d9dad3]">
         <Header />
-        <main className="min-h-screen max-w-4xl rounded-sm bg-white pt-16 shadow sm:mx-16 sm:my-20 sm:min-h-0 sm:pt-0 lg:mx-auto">
+        <main className="min-h-screen max-w-4xl rounded-sm bg-white pt-16 shadow dark:bg-neutral-700 sm:mx-16 sm:my-20 sm:min-h-0 sm:pt-0 lg:mx-auto">
           {children}
         </main>
       </body>

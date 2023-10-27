@@ -9,7 +9,7 @@ export default function NotFound() {
         <div className="flex h-96 flex-col items-center justify-center">
           <h1 className="text-2xl">404 - 页面不存在</h1>
           <a
-            className="mt-4 text-lg transition-colors hover:text-pink"
+            className="mt-4 text-lg hover:text-pink"
             href="/"
           >
             返回主页

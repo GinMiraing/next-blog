@@ -39,7 +39,7 @@ export default function Page({
       <div className="px-4 sm:px-6 sm:pt-4">
         <Suspense fallback={<PostlistFallback />}>
           <Postlist totalPosts={allPosts.length}>
-            <div className="mt-4 divide-y sm:mt-0">
+            <div className="mt-4 divide-y divide-dashed divide-slate-300 dark:divide-neutral-500 sm:mt-0">
               {list.map((post) => (
                 <Postcard
                   key={post._raw.flattenedPath}

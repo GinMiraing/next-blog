@@ -6,6 +6,10 @@
   --pink: #ff6b81;
 }
 
+:root.dark {
+  --pink: #ff6b81;
+}
+
 html {
   font-family: "LXGW WenKai Screen", sans-serif;
   font-size: 16px;
@@ -48,4 +52,10 @@ pre {
 
 .comments-content p {
   @apply text-justify text-sm/6 sm:text-base/7;
+}
+
+.header {
+  transition-property: max-height;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 1000ms;
 }
