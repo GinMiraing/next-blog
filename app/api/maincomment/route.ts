@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       relpy: number;
     }[] = await MainCommentModel.find({
       path,
-    });
+    }).sort({ _id: -1 });
 
     return NextResponse.json<{ data: MainCommentType[] }>({
       data: comments.map((comment) => {

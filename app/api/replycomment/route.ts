@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     }[] = await ReplyCommentModel.find({
       parent_id: parentId,
       path,
-    });
+    }).sort({ _id: 1 });
 
     return NextResponse.json<{ data: ReplyCommentType[] }>({
       data: comments.map((comment) => {
