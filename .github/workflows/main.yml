@@ -26,8 +26,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          build-args: |
-            mongodb_uri=${{ secrets.MONGODB_URI }}
           tags: |
             ginmiraing/nextblog:${{ github.ref_name }}
             ginmiraing/nextblog:latest
