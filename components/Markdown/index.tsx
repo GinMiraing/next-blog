@@ -14,7 +14,14 @@ import { Post } from "@/.contentlayer/generated";
 const Comments = dynamic(() => import("@/components/Comments"));
 
 const mdxComponents: MDXComponents = {
-  a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
+  a: ({ href, children }) => (
+    <Link
+      className="text-pink underline-offset-4 hover:underline"
+      href={href as string}
+    >
+      {children}
+    </Link>
+  ),
   img: ({ src, alt }) => (
     <Link
       data-fancybox
