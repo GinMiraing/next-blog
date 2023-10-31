@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       email,
       email_md5: emailMd5,
       link,
-      content,
+      content: content.trim(),
       is_admin: adminAuth ? true : false,
       is_hidden: false,
       path,
