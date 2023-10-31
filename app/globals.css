@@ -40,6 +40,7 @@ pre {
   @apply text-sm/6 sm:text-base/7;
   padding: 1rem;
   overflow-x: auto;
+  margin: 1rem 0;
 }
 
 .footnotes h2 {
