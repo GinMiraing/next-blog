@@ -208,12 +208,11 @@ const CommentsInputForm: React.FC<{
                   {replyData.nick}
                 </a>
               </div>
-              <div
-                className="mt-4 border-l-4 border-pink pl-4 text-sm sm:text-base"
-                dangerouslySetInnerHTML={{
-                  __html: `<p>${replyData.content.replace(/\n/g, "<br/>")}</p>`,
-                }}
-              ></div>
+              <div className="mt-4 border-l-4 border-pink pl-4 text-sm sm:text-base">
+                <p className="whitespace-pre-wrap text-justify text-sm/6 sm:text-base/7">
+                  {replyData.content}
+                </p>
+              </div>
             </>
           )}
           <textarea
@@ -527,21 +526,19 @@ const BaseCommentItem: React.FC<{
               </div>
             )}
           </div>
-          <div
-            className="comments-content my-3 w-full rounded-md bg-red-50 px-2 py-4 dark:bg-stone-600 sm:px-4"
-            dangerouslySetInnerHTML={
-              comment.replyNick
-                ? {
-                    __html: `<p>${
-                      comment.replyNick &&
-                      `<a class="hover:text-pink bg-yellow-200 dark:bg-yellow-600" href="${pathname}#${comment.replyId}">@${comment.replyNick}</a> `
-                    }${comment.content.replace(/\n/g, "<br/>")}</p>`,
-                  }
-                : {
-                    __html: `<p>${comment.content.replace(/\n/g, "<br/>")}</p>`,
-                  }
-            }
-          ></div>
+          <div className="comments-content my-3 w-full rounded-md bg-red-50 px-2 py-4 dark:bg-stone-600 sm:px-4">
+            <p className="whitespace-pre-wrap text-justify text-sm/6 sm:text-base/7">
+              {comment.replyNick && (
+                <a
+                  className="mr-2 bg-yellow-200 hover:text-pink dark:bg-yellow-600"
+                  href={`${pathname}#${comment.replyId}`}
+                >
+                  @{comment.replyNick}
+                </a>
+              )}
+              {comment.content}
+            </p>
+          </div>
           {children}
         </div>
       </div>
