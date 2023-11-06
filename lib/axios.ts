@@ -17,15 +17,11 @@ const axiosInstance = axios.create({
 
 export const getAllCommentsByPath = async (payload: {
   path: string;
-  authKey?: string;
 }): Promise<FormatedComment[]> => {
-  const { path, authKey } = payload;
+  const { path } = payload;
   const res = await axiosInstance.get<CommentSchema[]>("/comments", {
     params: {
       path,
-    },
-    headers: {
-      "Api-Key": authKey,
     },
   });
 
@@ -59,21 +55,15 @@ export const createComment = async (payload: {
   });
 
   console.log("评论成功");
-
-  return;
 };
 
 export const getRepliesByParentId = async (payload: {
   parentId: number;
-  authKey?: string;
 }): Promise<FormatedReply[]> => {
-  const { parentId, authKey } = payload;
+  const { parentId } = payload;
   const res = await axiosInstance.get<ReplySchema[]>("/replies", {
     params: {
       parent_id: parentId,
-    },
-    headers: {
-      "Api-Key": authKey,
     },
   });
 
@@ -88,6 +78,38 @@ export const getRepliesByParentId = async (payload: {
     replyId: reply.reply_id,
     replyNick: reply.reply_nick,
   }));
+};
+
+export const createReply = async (payload: {
+  data: {
+    nick: string;
+    email: string;
+    link: string;
+    content: string;
+    parentId: number;
+    replyId: number;
+  };
+  authKey?: string;
+}) => {
+  const { data, authKey } = payload;
+  await axiosInstance.post(
+    "/replies",
+    {
+      nick: data.nick,
+      email: data.email,
+      link: data.link,
+      content: data.content,
+      parent_id: data.parentId,
+      reply_id: data.replyId,
+    },
+    {
+      headers: {
+        "Api-Key": authKey,
+      },
+    },
+  );
+
+  console.log("回复成功");
 };
 
 export const getAuthKey = async (): Promise<string> => {

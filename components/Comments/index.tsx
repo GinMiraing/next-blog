@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
 import Image from "next/legacy/image";
@@ -12,6 +11,7 @@ import { z } from "zod";
 
 import {
   createComment,
+  createReply,
   getAllCommentsByPath,
   getAuthKey,
   getRepliesByParentId,
@@ -150,20 +150,18 @@ const CommentsInputForm: React.FC<{
     const { nick, email, link, content } = data;
 
     try {
+      const authKey = await getAuthKey();
       if (replyData.isReply) {
-        await axios({
-          method: "POST",
-          url: "/api/replycomment",
+        await createReply({
           data: {
             nick,
             email,
-            link,
+            link: link ? link : "",
             content,
-            path: pathname,
             parentId: replyData.parentId,
             replyId: replyData.replyId,
-            replyNick: replyData.nick,
           },
+          authKey,
         });
         setReplyData({
           isReply: false,
@@ -173,7 +171,6 @@ const CommentsInputForm: React.FC<{
           content: "",
         });
       } else {
-        const authKey = await getAuthKey();
         await createComment({
           data: {
             nick,
@@ -306,11 +303,9 @@ const ParentCommentsList: React.FC<{
     try {
       setLoading("loading");
       await sleep(1000);
-      const authKey = await getAuthKey();
       setCommentList(
         await getAllCommentsByPath({
           path: pathname,
-          authKey,
         }),
       );
     } catch (error) {
@@ -408,8 +403,7 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
     try {
       setLoading("loading");
       await sleep(1000);
-      const authKey = await getAuthKey();
-      setReplyList(await getRepliesByParentId({ parentId, authKey }));
+      setReplyList(await getRepliesByParentId({ parentId }));
     } catch (error) {
       console.log(error);
     } finally {
@@ -426,6 +420,14 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
       <div className="flex h-40 w-full items-center justify-center">
         <Loader2 className="mr-2 animate-spin text-pink" />
         评论正在加载中...
+      </div>
+    );
+  }
+
+  if (replyList.length === 0 && loading === "success") {
+    return (
+      <div className="flex h-40 w-full items-center justify-center">
+        暂无评论
       </div>
     );
   }
