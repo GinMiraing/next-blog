@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
 import Image from "next/legacy/image";
@@ -10,7 +9,14 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { MainCommentType, ReplyCommentType } from "@/lib/types";
+import {
+  createComment,
+  createReply,
+  getAllCommentsByPath,
+  getAuthKey,
+  getRepliesByParentId,
+} from "@/lib/axios";
+import { FormatedComment, FormatedReply } from "@/lib/types";
 import { cn, sleep } from "@/lib/utils";
 
 const commentSchema = z.object({
@@ -85,7 +91,7 @@ const replyBtnHandler = (
       content: string;
     }>
   >,
-  comment: MainCommentType | ReplyCommentType,
+  comment: FormatedComment | FormatedReply,
   parenId: number,
 ) => {
   setReplyData({
@@ -144,20 +150,18 @@ const CommentsInputForm: React.FC<{
     const { nick, email, link, content } = data;
 
     try {
+      const authKey = await getAuthKey();
       if (replyData.isReply) {
-        await axios({
-          method: "POST",
-          url: "/api/replycomment",
+        await createReply({
           data: {
             nick,
             email,
-            link,
+            link: link ? link : "",
             content,
-            path: pathname,
             parentId: replyData.parentId,
             replyId: replyData.replyId,
-            replyNick: replyData.nick,
           },
+          authKey,
         });
         setReplyData({
           isReply: false,
@@ -167,16 +171,15 @@ const CommentsInputForm: React.FC<{
           content: "",
         });
       } else {
-        await axios({
-          method: "POST",
-          url: "/api/maincomment",
+        await createComment({
           data: {
             nick,
             email,
-            link,
+            link: link ? link : "",
             content,
             path: pathname,
           },
+          authKey,
         });
       }
       reset();
@@ -293,24 +296,18 @@ const ParentCommentsList: React.FC<{
   const [loading, setLoading] = useState<"wait" | "loading" | "success">(
     "wait",
   );
-  const [commentList, setCommentList] = useState<MainCommentType[]>([]);
+  const [commentList, setCommentList] = useState<FormatedComment[]>([]);
   const pathname = usePathname();
 
   const fetchMainComments = async () => {
     try {
       setLoading("loading");
       await sleep(1000);
-      const res = await axios<{
-        data: MainCommentType[];
-      }>({
-        method: "GET",
-        url: "/api/maincomment",
-        params: {
+      setCommentList(
+        await getAllCommentsByPath({
           path: pathname,
-        },
-      });
-
-      setCommentList(res.data.data);
+        }),
+      );
     } catch (error) {
       console.log(error);
     } finally {
@@ -351,7 +348,7 @@ const ParentCommentsList: React.FC<{
   );
 };
 
-const ParentCommentsItem: React.FC<{ comment: MainCommentType }> = ({
+const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
   comment,
 }) => {
   const [show, setShow] = useState<"show" | "hide" | "init">("init");
@@ -397,28 +394,16 @@ const ParentCommentsItem: React.FC<{ comment: MainCommentType }> = ({
 };
 
 const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
-  const pathname = usePathname();
   const [loading, setLoading] = useState<"wait" | "loading" | "success">(
     "wait",
   );
-  const [replyList, setReplyList] = useState<ReplyCommentType[]>([]);
+  const [replyList, setReplyList] = useState<FormatedReply[]>([]);
 
   const fetchReplyComments = async () => {
     try {
       setLoading("loading");
       await sleep(1000);
-      const res = await axios<{
-        data: ReplyCommentType[];
-      }>({
-        method: "GET",
-        url: "/api/replycomment",
-        params: {
-          parentId,
-          path: pathname,
-        },
-      });
-
-      setReplyList(res.data.data);
+      setReplyList(await getRepliesByParentId({ parentId }));
     } catch (error) {
       console.log(error);
     } finally {
@@ -439,6 +424,14 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
     );
   }
 
+  if (replyList.length === 0 && loading === "success") {
+    return (
+      <div className="flex h-40 w-full items-center justify-center">
+        暂无评论
+      </div>
+    );
+  }
+
   return (
     <>
       {replyList.map((reply) => (
@@ -453,7 +446,7 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
 };
 
 const ReplyCommentsItem: React.FC<{
-  comment: ReplyCommentType;
+  comment: FormatedReply;
   parentId: number;
 }> = ({ comment, parentId }) => {
   const { setReplyData } = useComments();
