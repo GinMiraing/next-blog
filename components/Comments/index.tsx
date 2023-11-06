@@ -10,7 +10,13 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { MainCommentType, ReplyCommentType } from "@/lib/types";
+import {
+  createComment,
+  getAllCommentsByPath,
+  getAuthKey,
+  getRepliesByParentId,
+} from "@/lib/axios";
+import { FormatedComment, FormatedReply } from "@/lib/types";
 import { cn, sleep } from "@/lib/utils";
 
 const commentSchema = z.object({
@@ -85,7 +91,7 @@ const replyBtnHandler = (
       content: string;
     }>
   >,
-  comment: MainCommentType | ReplyCommentType,
+  comment: FormatedComment | FormatedReply,
   parenId: number,
 ) => {
   setReplyData({
@@ -167,16 +173,16 @@ const CommentsInputForm: React.FC<{
           content: "",
         });
       } else {
-        await axios({
-          method: "POST",
-          url: "/api/maincomment",
+        const authKey = await getAuthKey();
+        await createComment({
           data: {
             nick,
             email,
-            link,
+            link: link ? link : "",
             content,
             path: pathname,
           },
+          authKey,
         });
       }
       reset();
@@ -293,24 +299,20 @@ const ParentCommentsList: React.FC<{
   const [loading, setLoading] = useState<"wait" | "loading" | "success">(
     "wait",
   );
-  const [commentList, setCommentList] = useState<MainCommentType[]>([]);
+  const [commentList, setCommentList] = useState<FormatedComment[]>([]);
   const pathname = usePathname();
 
   const fetchMainComments = async () => {
     try {
       setLoading("loading");
       await sleep(1000);
-      const res = await axios<{
-        data: MainCommentType[];
-      }>({
-        method: "GET",
-        url: "/api/maincomment",
-        params: {
+      const authKey = await getAuthKey();
+      setCommentList(
+        await getAllCommentsByPath({
           path: pathname,
-        },
-      });
-
-      setCommentList(res.data.data);
+          authKey,
+        }),
+      );
     } catch (error) {
       console.log(error);
     } finally {
@@ -351,7 +353,7 @@ const ParentCommentsList: React.FC<{
   );
 };
 
-const ParentCommentsItem: React.FC<{ comment: MainCommentType }> = ({
+const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
   comment,
 }) => {
   const [show, setShow] = useState<"show" | "hide" | "init">("init");
@@ -397,28 +399,17 @@ const ParentCommentsItem: React.FC<{ comment: MainCommentType }> = ({
 };
 
 const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
-  const pathname = usePathname();
   const [loading, setLoading] = useState<"wait" | "loading" | "success">(
     "wait",
   );
-  const [replyList, setReplyList] = useState<ReplyCommentType[]>([]);
+  const [replyList, setReplyList] = useState<FormatedReply[]>([]);
 
   const fetchReplyComments = async () => {
     try {
       setLoading("loading");
       await sleep(1000);
-      const res = await axios<{
-        data: ReplyCommentType[];
-      }>({
-        method: "GET",
-        url: "/api/replycomment",
-        params: {
-          parentId,
-          path: pathname,
-        },
-      });
-
-      setReplyList(res.data.data);
+      const authKey = await getAuthKey();
+      setReplyList(await getRepliesByParentId({ parentId, authKey }));
     } catch (error) {
       console.log(error);
     } finally {
@@ -453,7 +444,7 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
 };
 
 const ReplyCommentsItem: React.FC<{
-  comment: ReplyCommentType;
+  comment: FormatedReply;
   parentId: number;
 }> = ({ comment, parentId }) => {
   const { setReplyData } = useComments();
