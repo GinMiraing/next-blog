@@ -29,5 +29,5 @@ jobs:
           build-args: |
             backend_host=${{ secrets.BACKEND_HOST }}
           tags: |
-            ginmiraing/nextblog:${{ github.ref_name }}
-            ginmiraing/nextblog:latest
+            ginmiraing/next-blog:${{ github.ref_name }}
+            ginmiraing/next-blog:latest
