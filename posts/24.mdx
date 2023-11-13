@@ -1,0 +1,145 @@
+---
+title: "JavaScript：策略模式的小应用"
+date: "2023.11.13"
+description: "最近在开发项目时，负责人提了一个需求：自动判断用户提交的表单内容，然后根据内容给每个表单打上一个或多个标签......"
+id: 24
+---
+
+最近在开发项目时，负责人提了一个需求：自动判断用户提交的表单内容，然后根据内容给每个表单打上一个或多个标签。刚开始时，我用 if...else... 写出了屎一样的代码：
+
+```ts
+const verifier = (input: string) => {
+  if (!input) return;
+
+  const tags: string[] = [];
+
+  if (...) {
+    tags.push("...");
+  } else if (...) {
+    tags.push("...");
+  } else {
+    tags.push("...");
+  }
+
+  return tags;
+};
+
+```
+
+这段代码的确能够满足需求，根据 input 的值在数组中插入合适的标签，最后再返回数组。但是，这段代码的可拓展性非常糟糕，负责人在 review 的时候问我：“假如我需要拓展需求呢？比如不只是前面的那些标签，我之后还要加上更多的标签。”我当时回了一句，直接在后面继续 if...else... 就好了 🙈。即便不讨论可拓展性，这段代码的可读性也一言难尽，可以通过 switch...case... 的方法来提高代码的可读性：
+
+```ts
+const verifier = (input: string) => {
+  if (!input) return;
+
+  const tags: string[] = [];
+
+  switch (input.xxx) {
+    case "xxx":
+      tags.push("...");
+      break;
+    case "xxx":
+      tags.push("...");
+      break;
+    default:
+      tags.push("...");
+  }
+
+  return tags;
+};
+
+```
+
+但这种方法不能从根本上解决可拓展性差的问题。在写一些功能性的方法时，例如上述例子中的标签验证器，最好的做法是将每个验证器单独拆出来，一个验证器只负责一个功能。这种做法能够保证后续添加的验证器也是独立的，并且在使用时，可以自由选择不同验证器进行组合。这就是策略模式，具体的代码实现如下：
+
+```ts
+type verifier = {
+  name: string;
+  verifier: (input: string) => boolean;
+};
+
+class verifierClass {
+  nullVerifier = (input: string) => !!input;
+
+  numberVerifier = (input: string) => {
+    if (this.nullVerifier(input)) {
+      return false;
+    }
+
+    const numberRegex = /^[0-9]+$/;
+    return numberRegex.test(input);
+  };
+
+  letterVerifier = (input: string) => {
+    if (this.nullVerifier(input)) {
+      return false;
+    }
+
+    const letterRegex = /^[a-zA-Z]+$/;
+    return letterRegex.test(input);
+  };
+
+  letterLengthVerifier = (input: string, len: number) => {
+    if (this.nullVerifier(input)) {
+      return false;
+    }
+
+    if (input.length !== len) {
+      return false;
+    }
+
+    return this.letterVerifier(input);
+  };
+}
+
+const basicVerifier = new verifierClass();
+
+const verifiers: verifier[] = [
+  {
+    name: "X",
+    verifier: (input: string) => basicVerifier.letterLengthVerifier(input, 1),
+  },
+  {
+    name: "XX",
+    verifier: (input: string) => {
+      if (basicVerifier.nullVerifier(input)) {
+        return false;
+      }
+
+      const mixRegex = /^[a-zA-Z0-9]+$/;
+      return mixRegex.test(input);
+    },
+  },
+  {
+    name: "XXX",
+    verifier: (input: string) => {
+      if (basicVerifier.nullVerifier(input)) {
+        return false;
+      }
+
+      const base64Regex =
+        /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+      return base64Regex.test(input);
+    },
+  },
+];
+
+const verifierFunc = (input: string, verifiers: verifier[]) => {
+  const tags: string[] = [];
+
+  verifiers.reduce((prev, current) => {
+    if (current.verifier(input)) {
+      return [...prev, current.name];
+    }
+    return prev;
+  }, tags);
+
+  return tags;
+};
+```
+
+上述代码中，verifierClass 类里面是基本的验证器，更高级的验证器可以由这些基本的验证器组成；verifiers 数组是目前使用的验证器集合，如果后续需求有扩展，可以在这个数组中添加新的验证器，或者新写一个数组，使两个验证器集合互不干扰；verifierFunc 是验证函数，这个函数接受待验证的输入和验证器数组两个参数，通过数组的 reduce 方法让输入经过每个验证器，符合的就打上标签。
+
+相比于 if...else...，策略模式对每段代码的功能拆分得更加细致，自定义性也比较好。例如上述代码中 verifiers 这个数组，它的验证器可以直接使用 verifierClass 类中的基础验证器——“空验证器”、“数字验证器”、“字母验证器”......也可以在基础验证器上进行自定义，生成 “base64 验证器”等。在开头的 if...else... 模式中，我们新增需求修改的是 verifierFunc 函数，在策略模式下，这段函数是不需要改动的，只需要更新验证器参数就行，我觉得策略模式才是真正做到了代码的解耦。
+
+通过这一次开发，我发现自己对如何优化代码并不熟悉，策略模式也是在负责人的提醒下才想出的，看来代码写得还是不够呀！
