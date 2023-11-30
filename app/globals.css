@@ -44,6 +44,11 @@ pre {
   margin: 1rem 0;
 }
 
+.footnotes li {
+  margin-top: -5rem;
+  padding-top: 4rem;
+}
+
 .footnotes h2 {
   display: none;
 }

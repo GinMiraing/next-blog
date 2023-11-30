@@ -25,7 +25,7 @@ const mdxComponents: MDXComponents = {
   img: ({ src, alt }) => (
     <Link
       data-fancybox
-      className="relative block h-60 w-full overflow-hidden sm:h-80"
+      className="relative block h-60 w-full overflow-hidden rounded transition-all hover:brightness-75 sm:h-80"
       href={src as string}
       referrerPolicy="no-referrer"
     >
@@ -41,7 +41,9 @@ const mdxComponents: MDXComponents = {
   ),
 
   h2: ({ children }) => (
-    <h2 className="my-2 text-lg underline underline-offset-4"># {children}</h2>
+    <h2 className="my-2 inline-block rounded bg-red-100 px-1.5 font-medium text-lg">
+      {children}
+    </h2>
   ),
 
   blockquote: ({ children }) => (

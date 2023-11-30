@@ -20,7 +20,7 @@ const Pagination: React.FC<{
       <button
         onClick={() => router.push(`${pathname}?page=1`)}
         disabled={currentPage === 1}
-        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-pink hover:text-white disabled:bg-white disabled:text-primary"
+        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-black/10 disabled:bg-pink disabled:text-white"
       >
         1
       </button>
@@ -36,7 +36,7 @@ const Pagination: React.FC<{
           key={page}
           onClick={() => router.push(`${pathname}?page=${page}`)}
           disabled={page === currentPage}
-          className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-pink hover:text-white disabled:bg-white disabled:text-primary"
+          className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-black/10 disabled:bg-pink disabled:text-white"
         >
           {page}
         </button>
@@ -51,7 +51,7 @@ const Pagination: React.FC<{
       <button
         onClick={() => router.push(`${pathname}?page=${totalPage}`)}
         disabled={currentPage === totalPage}
-        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-pink hover:text-white disabled:bg-white disabled:text-primary"
+        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-black/10 disabled:bg-pink disabled:text-white"
       >
         {totalPage}
       </button>

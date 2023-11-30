@@ -112,9 +112,13 @@ const Comments: React.FC = () => {
 
   return (
     <div className="comments py-4">
-      <h2 className="inline-block bg-red-100 px-2 text-lg dark:bg-neutral-800">
-        评论
-      </h2>
+      <div className="flex items-center justify-between">
+        <hr className="w-full border-t-2 border-dashed border-red-100" />
+        <h2 className="mx-4 shrink-0 rounded bg-red-100 px-2 text-center font-medium text-lg">
+          读者评论
+        </h2>
+        <hr className="w-full border-t-2 border-dashed border-red-100" />
+      </div>
       <CommentsProvider>
         <CommentsInputForm setRefresh={setRefresh} />
         <ParentCommentsList refresh={refresh} />
@@ -193,7 +197,7 @@ const CommentsInputForm: React.FC<{
 
   const textareaInputHandler = (e: React.FormEvent<HTMLTextAreaElement>) => {
     e.currentTarget.style.height = "0px";
-    e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+    e.currentTarget.style.height = `${e.currentTarget.scrollHeight + 56}px`;
   };
 
   return (
@@ -222,43 +226,43 @@ const CommentsInputForm: React.FC<{
             placeholder="请填写评论内容"
             id="content"
             onInput={(e) => textareaInputHandler(e)}
-            className="mt-4 h-10 w-full overflow-hidden whitespace-pre-wrap rounded-sm border p-2 text-sm/6 outline-none placeholder:text-xs/6 dark:border-neutral-800 dark:bg-neutral-800 sm:text-base sm:placeholder:text-sm/6"
+            className="mt-4 h-24 w-full overflow-hidden whitespace-pre-wrap rounded-md border border-neutral-200 bg-gray-50 p-2 text-sm/6 outline-none placeholder:text-xs/6 focus:border-rose-300 sm:text-base sm:placeholder:text-sm/6"
             {...register("content")}
           ></textarea>
         </div>
         <div className="mt-4 flex w-full">
           <div className="grid w-full grid-cols-1 gap-4">
-            <div className="flex items-center overflow-hidden rounded-sm">
-              <div className="flex h-full w-20 shrink-0 items-center justify-center bg-gray-100 px-4 text-sm dark:bg-stone-600">
+            <div className="flex h-12 items-center overflow-hidden rounded-sm">
+              <div className="flex h-full w-20 shrink-0 items-center justify-center rounded-l-md border border-r-0 px-4 text-sm">
                 <label>
                   昵称<span className="text-red-500">*</span>
                 </label>
               </div>
               <input
-                className="w-10 grow border px-2 py-1 text-sm outline-none dark:border-neutral-800 dark:bg-neutral-800 sm:text-base"
+                className="h-full w-10 grow rounded-r-md border bg-gray-50 px-2 py-1 text-sm outline-none focus:border-rose-300 sm:text-base"
                 type="text"
                 {...register("nick")}
               />
             </div>
-            <div className="flex items-center overflow-hidden rounded-sm">
-              <div className="flex h-full w-20 shrink-0 items-center justify-center bg-gray-100 px-4 text-sm dark:bg-stone-600">
+            <div className="flex h-12 items-center overflow-hidden rounded-sm">
+              <div className="flex h-full w-20 shrink-0 items-center justify-center rounded-l-md border border-r-0 px-4 text-sm">
                 <label>
                   邮箱<span className="text-red-500">*</span>
                 </label>
               </div>
               <input
-                className="w-10 grow border px-2 py-1 text-sm outline-none placeholder:text-xs dark:border-neutral-800 dark:bg-neutral-800 sm:text-base sm:placeholder:text-sm"
+                className="h-full w-10 grow rounded-r-md border bg-gray-50 px-2 py-1 text-sm outline-none focus:border-rose-300 sm:text-base sm:placeholder:text-sm"
                 placeholder="用于邮件通知"
                 type="text"
                 {...register("email")}
               />
             </div>
-            <div className="flex items-center overflow-hidden rounded-sm">
-              <div className="flex h-full w-20  shrink-0 items-center justify-center bg-gray-100 px-4 text-sm dark:bg-stone-600">
+            <div className="flex h-12 items-center overflow-hidden rounded-sm">
+              <div className="flex h-full w-20 shrink-0 items-center justify-center rounded-l-md border border-r-0 px-4 text-sm">
                 <label>网站</label>
               </div>
               <input
-                className="w-10 grow border px-2 py-1 text-sm outline-none placeholder:text-sm dark:border-neutral-800 dark:bg-neutral-800 sm:text-base"
+                className="h-full w-10 grow rounded-r-md border bg-slate-50 px-2 py-1 text-sm outline-none focus:border-red-500 sm:text-base sm:placeholder:text-sm"
                 type="text"
                 {...register("link")}
               />
@@ -337,14 +341,14 @@ const ParentCommentsList: React.FC<{
   }
 
   return (
-    <div className="space-y-4">
+    <>
       {commentList.map((comment) => (
         <ParentCommentsItem
           comment={comment}
           key={comment.id}
         />
       ))}
-    </div>
+    </>
   );
 };
 
@@ -355,7 +359,7 @@ const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
   const { setReplyData } = useComments();
 
   return (
-    <>
+    <div className="p-5">
       <BaseCommentItem comment={comment}>
         <div className="flex justify-between text-sm sm:text-base">
           <button
@@ -389,7 +393,7 @@ const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
           <ReplyCommentsList parentId={comment.id} />
         </div>
       )}
-    </>
+    </div>
   );
 };
 
@@ -433,7 +437,7 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
   }
 
   return (
-    <>
+    <div className="space-y-2">
       {replyList.map((reply) => (
         <ReplyCommentsItem
           parentId={parentId}
@@ -441,7 +445,7 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
           key={reply.id}
         />
       ))}
-    </>
+    </div>
   );
 };
 
@@ -484,11 +488,11 @@ const BaseCommentItem: React.FC<{
 
   return (
     <div
-      className="w-full"
+      className="-mt-20 w-full pt-20"
       id={comment.id.toString()}
     >
       <div className="flex w-full">
-        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border-2 bg-blue-100 dark:border-stone-400 dark:bg-neutral-500">
+        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md">
           <Image
             src={`https://cravatar.cn/avatar/${comment.emailMd5}`}
             alt={comment.emailMd5}
@@ -497,7 +501,7 @@ const BaseCommentItem: React.FC<{
             referrerPolicy="no-referrer"
           />
         </div>
-        <div className="ml-4 flex w-full flex-col overflow-hidden">
+        <div className="ml-4 flex w-full flex-col space-y-6 overflow-hidden">
           <div className="no-scrollbar flex items-center space-x-2 overflow-scroll sm:space-x-3">
             {comment.link ? (
               <a
@@ -519,7 +523,7 @@ const BaseCommentItem: React.FC<{
               </div>
             )}
           </div>
-          <div className="comments-content my-3 w-full rounded-md bg-red-50 px-2 py-4 dark:bg-stone-600 sm:px-4">
+          <div className="comments-content w-full rounded-md bg-red-50 px-2 py-4 sm:px-4">
             <p className="whitespace-pre-wrap text-justify text-sm/6 sm:text-base/7">
               {comment.replyNick && (
                 <a
