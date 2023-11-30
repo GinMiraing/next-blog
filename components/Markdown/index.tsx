@@ -84,9 +84,9 @@ const Markdown: React.FC<{ post: Post }> = ({ post }) => {
   }, []);
 
   return (
-    <div className="pb-4 pt-4 sm:pb-2">
-      <h1 className="mt-4 text-center text-xl">{post.title}</h1>
-      <p className="my-6 text-center text-sm">{post.date}</p>
+    <div className="space-y-6 pt-4">
+      <h1 className="text-center font-medium text-2xl">{post.title}</h1>
+      <p className="text-center text-sm">{post.date}</p>
       <div className="markdown">
         <MDXContent components={mdxComponents} />
       </div>

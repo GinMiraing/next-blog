@@ -3,15 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --pink: #ff6b81;
-}
-
-:root.dark {
+  --regular: "HarmonyOS_Regular";
+  --medium: "HarmonyOS_Medium";
+  --background: #fff;
+  --banner: #f0e9dc;
+  --primary-text: #313135;
   --pink: #ff6b81;
 }
 
 html {
-  font-family: "LXGW WenKai Screen", sans-serif;
+  font-family: "HarmonyOS_Regular", sans-serif;
   font-size: 16px;
   scroll-behavior: smooth;
 }

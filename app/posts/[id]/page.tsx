@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 
 import { BasicSettings } from "@/lib/setting";
 
-import Banner from "@/components/Banner";
 import Footer from "@/components/Footer";
 import Markdown from "@/components/Markdown";
 
@@ -37,12 +36,8 @@ export default function Page({ params }: { params: { id: string } }) {
   }
 
   return (
-    <>
-      <Banner />
-      <div className="px-4 sm:px-6">
-        <Markdown post={post} />
-        <Footer />
-      </div>
-    </>
+    <div className="animate-fade-up">
+      <Markdown post={post} />
+    </div>
   );
 }

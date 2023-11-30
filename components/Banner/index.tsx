@@ -1,31 +1,21 @@
 "use client";
 
-import { Sun } from "lucide-react";
 import Image from "next/legacy/image";
+import Link from "next/link";
 
 import { BasicSettings } from "@/lib/setting";
-import { toggleTheme } from "@/lib/utils";
+
+import NavBar from "@/components/Navbar";
 
 const Banner: React.FC = () => {
   return (
-    <div className="relative h-60 w-full bg-slate-300 sm:h-80">
-      <Image
-        src={
-          "https://article.biliimg.com/bfs/article/fed9bd2053975d67b3d9ba0ce9d31592129000357.jpg@.webp"
-        }
-        layout="fill"
-        alt="banner"
-        className="object-cover object-bottom"
-        referrerPolicy="no-referrer"
-        priority
-      />
-      <div className="absolute bottom-0 z-10 h-32 w-full bg-gradient-to-t from-black/40 to-transparent"></div>
-      <div className="absolute z-20 flex h-full w-full flex-col items-end justify-end p-6 sm:p-7">
-        <div className="flex w-full items-end justify-end">
-          <p className="mr-6 text-xl text-white sm:text-2xl">
-            {BasicSettings.description}
-          </p>
-          <div className="relative h-10 w-10 sm:h-12 sm:w-12">
+    <div className="fixed left-0 right-0 top-0 z-10 flex h-20 justify-center border-b bg-background">
+      <div className="flex w-full max-w-5xl items-center justify-between p-6">
+        <div className="flex items-center space-x-6">
+          <Link
+            href="/"
+            className="relative h-9 w-9 overflow-hidden rounded-full border sm:h-12 sm:w-12"
+          >
             <Image
               src={BasicSettings.avatar}
               alt="avatar"
@@ -33,15 +23,16 @@ const Banner: React.FC = () => {
               layout="fill"
               referrerPolicy="no-referrer"
             />
-          </div>
+          </Link>
+          <Link
+            href="/"
+            className="font-medium text-lg transition-colors hover:text-pink sm:text-2xl"
+          >
+            {BasicSettings.name}
+          </Link>
         </div>
+        <NavBar />
       </div>
-      <button
-        onClick={() => toggleTheme()}
-        className="absolute right-6 top-6 z-20 hidden text-white hover:text-pink sm:block"
-      >
-        <Sun />
-      </button>
     </div>
   );
 };

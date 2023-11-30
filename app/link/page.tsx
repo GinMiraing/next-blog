@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 
 import { BasicSettings } from "@/lib/setting";
 
-import Banner from "@/components/Banner";
 import Footer from "@/components/Footer";
 import FriendsLink from "@/components/FriendsLink";
 
@@ -18,13 +17,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <>
-      <Banner />
-      <div className="px-4 sm:px-6">
-        <FriendsLink />
-        <Comments />
-        <Footer />
-      </div>
-    </>
+    <div className="animate-fade-up">
+      <FriendsLink />
+      <Comments />
+    </div>
   );
 }

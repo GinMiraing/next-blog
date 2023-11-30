@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 
 import { BasicSettings } from "@/lib/setting";
 
-import Header from "@/components/Header";
+import Banner from "@/components/Banner";
+import Menu from "@/components/Menu";
 
 import "./globals.css";
 
@@ -27,14 +28,19 @@ export default function RootLayout({
         />
         <link
           rel="stylesheet"
-          href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreen.min.css"
+          href="https://s1.hdslb.com/bfs/static/jinkela/long/font/medium.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://s1.hdslb.com/bfs/static/jinkela/long/font/regular.css"
         />
       </head>
-      <body className="bg-[#f0e9dc] text-[#313135] dark:bg-neutral-800 dark:text-[#d9dad3]">
-        <Header />
-        <main className="min-h-screen max-w-4xl rounded-sm bg-white pt-16 shadow dark:bg-neutral-700 sm:mx-16 sm:my-20 sm:min-h-0 sm:pt-0 lg:mx-auto">
+      <body className="bg-background font-regular text-primary">
+        <Banner />
+        <main className="mx-auto min-h-screen max-w-3xl px-4 pb-8 pt-24">
           {children}
         </main>
+        <Menu />
       </body>
     </html>
   );
