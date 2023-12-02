@@ -15,7 +15,7 @@ export default function Page({
   const category = searchParams.category;
 
   if (isNaN(parseInt(page))) {
-    throw new Error("Invalid page");
+    throw new Error("查询参数错误");
   }
 
   const intPage = parseInt(page);
@@ -27,6 +27,10 @@ export default function Page({
     .filter((post) => {
       return category ? post.category === category : true;
     });
+
+  if (sortedPosts.length === 0) {
+    throw new Error("未找到任何文章");
+  }
 
   const list = sortedPosts.slice(intPage * 7 - 7, intPage * 7);
 
