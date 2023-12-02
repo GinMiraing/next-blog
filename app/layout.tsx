@@ -37,7 +37,7 @@ export default function RootLayout({
       </head>
       <body className="bg-background font-regular text-primary">
         <Header />
-        <main className="mx-auto max-w-3xl px-6 pb-8 pt-24">{children}</main>
+        <main className="mx-auto max-w-3xl px-6 pt-20">{children}</main>
         <Footer />
       </body>
     </html>

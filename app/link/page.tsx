@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 
 import { BasicSettings } from "@/lib/setting";
 
-import Footer from "@/components/Footer";
 import FriendsLink from "@/components/FriendsLink";
 
 const Comments = dynamic(() => import("@/components/Comments"));
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="animate-fade-up space-y-6 pt-4">
+    <div className="min-h-[calc(100vh-10rem)] animate-fade-up space-y-6 py-6">
       <FriendsLink />
       <Comments />
     </div>

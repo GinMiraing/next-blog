@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,9 @@ const Pagination: React.FC<{
 }> = ({ currentPage, totalPage }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const category = searchParams.get("category");
 
   const pages = [currentPage - 1, currentPage, currentPage + 1].filter(
     (item) => item > 1 && item < totalPage,
@@ -18,9 +21,13 @@ const Pagination: React.FC<{
   return (
     <div className="flex items-center justify-center space-x-2">
       <button
-        onClick={() => router.push(`${pathname}?page=1`)}
+        onClick={() =>
+          router.push(
+            `${pathname}?page=1${category ? `&category=${category}` : ""}`,
+          )
+        }
         disabled={currentPage === 1}
-        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-black/10 disabled:bg-pink disabled:text-white"
+        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-50 disabled:bg-pink disabled:text-white"
       >
         1
       </button>
@@ -34,9 +41,15 @@ const Pagination: React.FC<{
       {pages.map((page) => (
         <button
           key={page}
-          onClick={() => router.push(`${pathname}?page=${page}`)}
+          onClick={() =>
+            router.push(
+              `${pathname}?page=${page}${
+                category ? `&category=${category}` : ""
+              }`,
+            )
+          }
           disabled={page === currentPage}
-          className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-black/10 disabled:bg-pink disabled:text-white"
+          className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-50 disabled:bg-pink disabled:text-white"
         >
           {page}
         </button>
@@ -49,9 +62,20 @@ const Pagination: React.FC<{
         ...
       </div>
       <button
-        onClick={() => router.push(`${pathname}?page=${totalPage}`)}
+        onClick={() =>
+          router.push(
+            `${pathname}?page=${totalPage}${
+              category ? `&category=${category}` : ""
+            }`,
+          )
+        }
         disabled={currentPage === totalPage}
-        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-black/10 disabled:bg-pink disabled:text-white"
+        className={cn(
+          "flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-50 disabled:bg-pink disabled:text-white",
+          {
+            hidden: totalPage === 1,
+          },
+        )}
       >
         {totalPage}
       </button>

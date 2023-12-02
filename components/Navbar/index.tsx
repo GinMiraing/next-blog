@@ -6,12 +6,13 @@ import Link from "next/link";
 
 import { NavbarItems } from "@/lib/setting";
 
-import { menuOpen } from "@/store/menu";
+import { NavbarOpen } from "@/store/navbar";
 
 const NavBar: React.FC = () => {
-  const open = useStore(menuOpen);
+  const open = useStore(NavbarOpen);
+
   return (
-    <nav>
+    <nav className="flex items-center">
       <div className="hidden space-x-6 sm:block">
         {NavbarItems.map((item) => (
           <Link
@@ -25,10 +26,10 @@ const NavBar: React.FC = () => {
       </div>
       <button
         type="button"
-        title="打开菜单栏"
-        aria-label="打开菜单栏"
+        title="打开导航栏"
+        aria-label="打开导航栏"
         className="transition-colors hover:text-pink sm:hidden"
-        onClick={() => menuOpen.set(!open)}
+        onClick={() => NavbarOpen.set(!open)}
       >
         <Menu />
       </button>

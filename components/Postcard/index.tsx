@@ -7,7 +7,7 @@ import { Post } from "@/.contentlayer/generated";
 
 const Postcard: React.FC<{ post: Post }> = ({ post }) => {
   return (
-    <div className="flex w-full animate-fade-up flex-col space-y-4 py-4">
+    <div className="flex w-full flex-col space-y-4 py-4">
       <Link
         href={post.url}
         className="line-clamp-1 text-center font-medium text-xl transition-colors hover:text-pink"

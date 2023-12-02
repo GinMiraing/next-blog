@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 
 import { BasicSettings } from "@/lib/setting";
 
-import Footer from "@/components/Footer";
 import Markdown from "@/components/Markdown";
+import { ToTop } from "@/components/Menu";
 
 import { allPosts } from "@/.contentlayer/generated";
 
@@ -36,8 +36,11 @@ export default function Page({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="animate-fade-up">
-      <Markdown post={post} />
+    <div className="min-h-[calc(100vh-10rem)] py-6">
+      <div className=" animate-fade-up">
+        <Markdown post={post} />
+      </div>
+      <ToTop />
     </div>
   );
 }

@@ -9,17 +9,19 @@ import { cn } from "@/lib/utils";
 
 import NavBar from "@/components/Navbar";
 
-import { menuOpen } from "@/store/menu";
+import { CurrentCategory } from "@/store/menu";
+import { NavbarOpen } from "@/store/navbar";
 
 const Header: React.FC = () => {
-  const open = useStore(menuOpen);
+  const open = useStore(NavbarOpen);
+  const currentCategory = useStore(CurrentCategory);
 
   return (
     <div
       className={cn(
         "fixed left-0 right-0 top-0 z-10 overflow-hidden border-b bg-background shadow transition-all duration-500 ease-in-out md:max-h-[5rem]",
         {
-          "max-h-[12rem]": open,
+          "max-h-[8.5rem]": open,
           "max-h-[5rem]": !open,
         },
       )}
@@ -28,7 +30,9 @@ const Header: React.FC = () => {
         <div className="flex h-20 w-full max-w-5xl items-center justify-between p-6">
           <div className="flex items-center space-x-6">
             <Link
-              href="/"
+              href={`/?page=1${
+                currentCategory === "全部" ? "" : `&category=${currentCategory}`
+              }`}
               className="relative h-9 w-9 overflow-hidden rounded-full border sm:h-12 sm:w-12"
             >
               <Image
@@ -40,7 +44,9 @@ const Header: React.FC = () => {
               />
             </Link>
             <Link
-              href="/"
+              href={`/?page=1${
+                currentCategory === "全部" ? "" : `&category=${currentCategory}`
+              }`}
               className="font-medium text-lg transition-colors hover:text-pink sm:text-2xl"
             >
               {BasicSettings.name}
@@ -52,7 +58,7 @@ const Header: React.FC = () => {
       <div className="flex flex-col">
         {NavbarItems.map((item) => (
           <Link
-            onClick={() => menuOpen.set(false)}
+            onClick={() => NavbarOpen.set(false)}
             key={item.name}
             href={item.link}
             className="flex h-14 w-full items-center justify-center transition-colors hover:bg-gray-100 hover:text-pink"

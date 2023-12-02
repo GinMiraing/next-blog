@@ -7,10 +7,6 @@ export const BasicSettings = {
 
 export const NavbarItems = [
   {
-    name: "主页",
-    link: "/",
-  },
-  {
     name: "友链",
     link: "/link/",
   },
@@ -81,5 +77,24 @@ export const FooterItems = [
   {
     name: "cc-sa",
     src: "/icons/cc-sa.svg",
+  },
+];
+
+export const Categories = [
+  {
+    name: "全部",
+    key: "all",
+  },
+  {
+    name: "生活",
+    key: "life",
+  },
+  {
+    name: "技术",
+    key: "tech",
+  },
+  {
+    name: "其他",
+    key: "other",
   },
 ];

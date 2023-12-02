@@ -86,7 +86,7 @@ const Markdown: React.FC<{ post: Post }> = ({ post }) => {
   }, []);
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="space-y-6">
       <h1 className="text-center font-medium text-2xl">{post.title}</h1>
       <p className="text-center text-sm">{post.date}</p>
       <div className="markdown">
