@@ -1,68 +1,71 @@
 "use client";
 
-import { Menu, Sun } from "lucide-react";
+import { useStore } from "@nanostores/react";
+import Image from "next/legacy/image";
 import Link from "next/link";
-import { useState } from "react";
 
 import { BasicSettings, NavbarItems } from "@/lib/setting";
-import { cn, toggleTheme } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+
+import NavBar from "@/components/Navbar";
+
+import { CurrentCategory } from "@/store/menu";
+import { NavbarOpen } from "@/store/navbar";
 
 const Header: React.FC = () => {
-  const [showMenu, setShowMenu] = useState(false);
+  const open = useStore(NavbarOpen);
+  const currentCategory = useStore(CurrentCategory);
 
   return (
     <div
       className={cn(
-        "header fixed top-0 z-50 flex h-screen w-full flex-col overflow-hidden bg-white shadow-md dark:bg-neutral-800 sm:hidden",
+        "fixed left-0 right-0 top-0 z-10 overflow-hidden border-b bg-background shadow transition-all duration-500 ease-in-out md:max-h-[5rem]",
         {
-          "max-h-16": !showMenu,
-          "max-h-screen": showMenu,
+          "max-h-[8.5rem]": open,
+          "max-h-[5rem]": !open,
         },
       )}
     >
-      <div className="flex h-16 w-full shrink-0 items-center justify-between px-4">
-        <Link
-          href="/"
-          className="text-lg hover:text-pink"
-        >
-          {BasicSettings.name}
-        </Link>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => toggleTheme()}
-            className="hover:text-pink"
-          >
-            <Sun />
-          </button>
-          <button onClick={() => setShowMenu((prev) => !prev)}>
-            <Menu />
-          </button>
-        </div>
-      </div>
-      <div className="flex w-full grow flex-col items-center">
-        {NavbarItems.map((item) => (
-          <div
-            key={item.name}
-            className="h-12 w-full px-4"
-          >
+      <div className="flex justify-center">
+        <div className="flex h-20 w-full max-w-5xl items-center justify-between p-6">
+          <div className="flex items-center space-x-6">
             <Link
-              onClick={() => setShowMenu(false)}
-              className="flex h-full w-full items-center justify-center rounded py-2 hover:bg-black/10 hover:text-pink"
-              href={item.link}
+              href={`/?page=1${
+                currentCategory === "全部" ? "" : `&category=${currentCategory}`
+              }`}
+              className="relative h-9 w-9 overflow-hidden rounded-full border sm:h-12 sm:w-12"
             >
-              {item.name}
+              <Image
+                src={BasicSettings.avatar}
+                alt="avatar"
+                className="object-cover object-center"
+                layout="fill"
+                referrerPolicy="no-referrer"
+              />
+            </Link>
+            <Link
+              href={`/?page=1${
+                currentCategory === "全部" ? "" : `&category=${currentCategory}`
+              }`}
+              className="font-medium text-lg transition-colors hover:text-pink sm:text-2xl"
+            >
+              {BasicSettings.name}
             </Link>
           </div>
-        ))}
+          <NavBar />
+        </div>
       </div>
-      <div className="space-y-2 px-4 pb-4 pt-6 text-center text-sm">
-        <Link
-          className="hover:text-pink"
-          href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
-        >
-          CC BY-NC-SA 4.0
-        </Link>
-        <p>©️ 2023 胤 版权所有</p>
+      <div className="flex flex-col">
+        {NavbarItems.map((item) => (
+          <Link
+            onClick={() => NavbarOpen.set(false)}
+            key={item.name}
+            href={item.link}
+            className="flex h-14 w-full items-center justify-center transition-colors hover:bg-gray-100 hover:text-pink"
+          >
+            {item.name}
+          </Link>
+        ))}
       </div>
     </div>
   );

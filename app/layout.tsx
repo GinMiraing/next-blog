@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { BasicSettings } from "@/lib/setting";
 
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 
 import "./globals.css";
@@ -27,14 +28,17 @@ export default function RootLayout({
         />
         <link
           rel="stylesheet"
-          href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreen.min.css"
+          href="https://s1.hdslb.com/bfs/static/jinkela/long/font/medium.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://s1.hdslb.com/bfs/static/jinkela/long/font/regular.css"
         />
       </head>
-      <body className="bg-[#f0e9dc] text-[#313135] dark:bg-neutral-800 dark:text-[#d9dad3]">
+      <body className="bg-background font-regular text-primary">
         <Header />
-        <main className="min-h-screen max-w-4xl rounded-sm bg-white pt-16 shadow dark:bg-neutral-700 sm:mx-16 sm:my-20 sm:min-h-0 sm:pt-0 lg:mx-auto">
-          {children}
-        </main>
+        <main className="mx-auto max-w-3xl px-6 pt-20">{children}</main>
+        <Footer />
       </body>
     </html>
   );

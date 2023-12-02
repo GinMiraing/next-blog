@@ -7,10 +7,6 @@ export const BasicSettings = {
 
 export const NavbarItems = [
   {
-    name: "主页",
-    link: "/",
-  },
-  {
     name: "友链",
     link: "/link/",
   },
@@ -62,5 +58,43 @@ export const FriendsLinkItems = [
     description: "愿山野浓雾都有路灯风...",
     avatar:
       "https://cravatar.cn/avatar/9581bec449e7289c8b0a77f949d5bbea?s=100&d=mm&r=g",
+  },
+];
+
+export const FooterItems = [
+  {
+    name: "cc-logo",
+    src: "/icons/cc-logo.svg",
+  },
+  {
+    name: "cc-by",
+    src: "/icons/cc-by.svg",
+  },
+  {
+    name: "cc-nc",
+    src: "/icons/cc-nc.svg",
+  },
+  {
+    name: "cc-sa",
+    src: "/icons/cc-sa.svg",
+  },
+];
+
+export const Categories = [
+  {
+    name: "全部",
+    key: "all",
+  },
+  {
+    name: "生活",
+    key: "life",
+  },
+  {
+    name: "技术",
+    key: "tech",
+  },
+  {
+    name: "其他",
+    key: "other",
   },
 ];

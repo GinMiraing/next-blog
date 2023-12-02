@@ -1,56 +1,60 @@
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
-
-import Banner from "@/components/Banner";
-import Footer from "@/components/Footer";
+import { Menu, MenuTrigger } from "@/components/Menu";
+import Pagination from "@/components/Pagination";
 import Postcard from "@/components/Postcard";
 
 import { allPosts } from "@/.contentlayer/generated";
 
-const Postlist = dynamic(() => import("@/components/Postlist"));
-
 export const revalidate = 60;
-
-const sortedPosts = allPosts.sort((a, b) => {
-  return a.id < b.id ? 1 : -1;
-});
-
-const PostlistFallback = () => {
-  return (
-    <div className="flex h-96 flex-col items-center justify-center">
-      <h1 className="text-2xl">Loading...</h1>
-    </div>
-  );
-};
 
 export default function Page({
   searchParams,
 }: {
-  searchParams: { pagesize?: string };
+  searchParams: { page?: string; category?: string };
 }) {
-  const { pagesize } = searchParams;
-  const pagesizeInt = pagesize ? parseInt(pagesize) : 7;
+  const page = searchParams.page || "1";
+  const category = searchParams.category;
 
-  const list = sortedPosts.slice(0, pagesizeInt);
+  if (isNaN(parseInt(page))) {
+    throw new Error("查询参数错误");
+  }
+
+  const intPage = parseInt(page);
+
+  const sortedPosts = allPosts
+    .sort((a, b) => {
+      return a.id < b.id ? 1 : -1;
+    })
+    .filter((post) => {
+      return category ? post.category === category : true;
+    });
+
+  if (sortedPosts.length === 0) {
+    throw new Error("未找到任何文章");
+  }
+
+  const list = sortedPosts.slice(intPage * 7 - 7, intPage * 7);
+
+  const totalPage = Math.ceil(sortedPosts.length / 7);
 
   return (
-    <>
-      <Banner />
-      <div className="px-4 sm:px-6 sm:pt-4">
-        <Suspense fallback={<PostlistFallback />}>
-          <Postlist totalPosts={allPosts.length}>
-            <div className="mt-4 divide-y divide-dashed divide-slate-300 dark:divide-neutral-500 sm:mt-0">
-              {list.map((post) => (
-                <Postcard
-                  key={post._raw.flattenedPath}
-                  post={post}
-                />
-              ))}
-            </div>
-          </Postlist>
-        </Suspense>
-        <Footer />
+    <div className="min-h-[calc(100vh-10rem)] py-6">
+      <div
+        key={page + category}
+        className="animate-fade-up divide-y divide-dashed divide-slate-300"
+      >
+        {list.map((post) => (
+          <Postcard
+            key={post._raw.flattenedPath}
+            post={post}
+          />
+        ))}
       </div>
-    </>
+      <Pagination
+        currentPage={intPage}
+        totalPage={totalPage}
+      />
+      <MenuTrigger />
+      <Menu />
+    </div>
   );
 }
