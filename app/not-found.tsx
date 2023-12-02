@@ -1,5 +1,5 @@
-import Banner from "@/components/Banner";
 import Footer from "@/components/Footer";
+import Banner from "@/components/Header";
 
 export default function NotFound() {
   return (

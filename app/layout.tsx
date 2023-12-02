@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { BasicSettings } from "@/lib/setting";
 
-import Banner from "@/components/Banner";
-import Menu from "@/components/Menu";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 import "./globals.css";
 
@@ -36,11 +36,9 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-background font-regular text-primary">
-        <Banner />
-        <main className="mx-auto min-h-screen max-w-3xl px-4 pb-8 pt-24">
-          {children}
-        </main>
-        <Menu />
+        <Header />
+        <main className="mx-auto max-w-3xl px-6 pb-8 pt-24">{children}</main>
+        <Footer />
       </body>
     </html>
   );

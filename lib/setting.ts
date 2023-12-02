@@ -64,3 +64,22 @@ export const FriendsLinkItems = [
       "https://cravatar.cn/avatar/9581bec449e7289c8b0a77f949d5bbea?s=100&d=mm&r=g",
   },
 ];
+
+export const FooterItems = [
+  {
+    name: "cc-logo",
+    src: "/icons/cc-logo.svg",
+  },
+  {
+    name: "cc-by",
+    src: "/icons/cc-by.svg",
+  },
+  {
+    name: "cc-nc",
+    src: "/icons/cc-nc.svg",
+  },
+  {
+    name: "cc-sa",
+    src: "/icons/cc-sa.svg",
+  },
+];

@@ -111,13 +111,13 @@ const Comments: React.FC = () => {
   const [refresh, setRefresh] = useState(true);
 
   return (
-    <div className="comments py-4">
+    <div className="comments space-y-6">
       <div className="flex items-center justify-between">
-        <hr className="w-full border-t-2 border-dashed border-red-100" />
+        <hr className="w-full border-t border-dashed border-slate-300" />
         <h2 className="mx-4 shrink-0 rounded bg-red-100 px-2 text-center font-medium text-lg">
           读者评论
         </h2>
-        <hr className="w-full border-t-2 border-dashed border-red-100" />
+        <hr className="w-full border-t border-dashed border-slate-300" />
       </div>
       <CommentsProvider>
         <CommentsInputForm setRefresh={setRefresh} />
@@ -201,7 +201,7 @@ const CommentsInputForm: React.FC<{
   };
 
   return (
-    <div className="my-6 flex flex-col">
+    <div className="flex flex-col">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="w-full">
           {replyData.isReply && (
@@ -341,14 +341,14 @@ const ParentCommentsList: React.FC<{
   }
 
   return (
-    <>
+    <div className="space-y-8">
       {commentList.map((comment) => (
         <ParentCommentsItem
           comment={comment}
           key={comment.id}
         />
       ))}
-    </>
+    </div>
   );
 };
 
@@ -359,7 +359,7 @@ const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
   const { setReplyData } = useComments();
 
   return (
-    <div className="p-5">
+    <div>
       <BaseCommentItem comment={comment}>
         <div className="flex justify-between text-sm sm:text-base">
           <button
@@ -437,7 +437,7 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       {replyList.map((reply) => (
         <ReplyCommentsItem
           parentId={parentId}
@@ -456,16 +456,18 @@ const ReplyCommentsItem: React.FC<{
   const { setReplyData } = useComments();
 
   return (
-    <BaseCommentItem comment={comment}>
-      <div className="flex justify-end text-sm sm:text-base">
-        <button
-          onClick={() => replyBtnHandler(setReplyData, comment, parentId)}
-          className="hover:text-pink"
-        >
-          回复
-        </button>
-      </div>
-    </BaseCommentItem>
+    <div>
+      <BaseCommentItem comment={comment}>
+        <div className="flex justify-end text-sm sm:text-base">
+          <button
+            onClick={() => replyBtnHandler(setReplyData, comment, parentId)}
+            className="hover:text-pink"
+          >
+            回复
+          </button>
+        </div>
+      </BaseCommentItem>
+    </div>
   );
 };
 
@@ -501,7 +503,7 @@ const BaseCommentItem: React.FC<{
             referrerPolicy="no-referrer"
           />
         </div>
-        <div className="ml-4 flex w-full flex-col space-y-6 overflow-hidden">
+        <div className="ml-4 flex w-full flex-col space-y-3 overflow-hidden">
           <div className="no-scrollbar flex items-center space-x-2 overflow-scroll sm:space-x-3">
             {comment.link ? (
               <a

@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-
 import Pagination from "@/components/Pagination";
 import Postcard from "@/components/Postcard";
 

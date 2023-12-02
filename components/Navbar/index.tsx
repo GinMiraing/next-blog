@@ -1,5 +1,6 @@
 "use client";
 
+import { useStore } from "@nanostores/react";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 
@@ -8,6 +9,7 @@ import { NavbarItems } from "@/lib/setting";
 import { menuOpen } from "@/store/menu";
 
 const NavBar: React.FC = () => {
+  const open = useStore(menuOpen);
   return (
     <nav>
       <div className="hidden space-x-6 sm:block">
@@ -26,7 +28,7 @@ const NavBar: React.FC = () => {
         title="打开菜单栏"
         aria-label="打开菜单栏"
         className="transition-colors hover:text-pink sm:hidden"
-        onClick={() => menuOpen.set(true)}
+        onClick={() => menuOpen.set(!open)}
       >
         <Menu />
       </button>

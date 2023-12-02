@@ -3,6 +3,7 @@ title: "Next.js 服务端的一个妙用"
 date: "2023.09.19"
 description: "目前防止盗链的一种方法是判断请求的 referer 值，只对符合条件的请求响应资源。为了方便用户能够直接在浏览器地址栏访问资源，一些图片会允许空值 referer，这时候浏览器可以通过设置 referer policy 置空 referer 达到请求资源的目的......"
 id: 21
+category: 技术
 ---
 
 目前防止盗链的一种方法是判断请求的 referer 值，只对符合条件的请求响应资源。为了方便用户能够直接在浏览器地址栏访问资源，一些图片会允许空值 referer，这时候浏览器可以通过设置 referer policy 置空 referer 达到请求资源的目的。我的博客使用的是 Bilibili 图床，B 站图片就允许 referer 为空。

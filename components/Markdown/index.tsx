@@ -25,7 +25,7 @@ const mdxComponents: MDXComponents = {
   img: ({ src, alt }) => (
     <Link
       data-fancybox
-      className="relative block h-60 w-full overflow-hidden rounded transition-all hover:brightness-75 sm:h-80"
+      className="relative block h-60 w-full overflow-hidden rounded bg-gray-50 transition-all hover:brightness-75 sm:h-80"
       href={src as string}
       referrerPolicy="no-referrer"
     >

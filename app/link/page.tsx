@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="animate-fade-up">
+    <div className="animate-fade-up space-y-6 pt-4">
       <FriendsLink />
       <Comments />
     </div>
