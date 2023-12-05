@@ -38,10 +38,7 @@ export default function Page({
 
   return (
     <div className="min-h-[calc(100vh-10rem)] py-6">
-      <div
-        key={page + category}
-        className="animate-fade-up divide-y divide-dashed divide-slate-300"
-      >
+      <div className="divide-y divide-dashed divide-slate-300">
         {list.map((post) => (
           <Postcard
             key={post._raw.flattenedPath}
@@ -54,7 +51,7 @@ export default function Page({
         totalPage={totalPage}
       />
       <MenuTrigger />
-      <Menu />
+      <Menu currentCategory={category || "全部"} />
     </div>
   );
 }

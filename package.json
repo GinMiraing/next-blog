@@ -23,6 +23,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.47.0",
+    "react-intersection-observer": "^9.5.3",
     "rehype-shiki": "^0.0.9",
     "remark-gfm": "^4.0.0",
     "tailwindcss-animated": "^1.0.1",
