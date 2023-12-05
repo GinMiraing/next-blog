@@ -1,13 +1,13 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
-import { ChevronUp, Command, X } from "lucide-react";
+import { Command, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Categories } from "@/lib/setting";
-import { cn, sleep } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
-import { CurrentCategory, MenuOpen } from "@/store/menu";
+import { MenuOpen } from "@/store/menu";
 
 const MenuTrigger: React.FC = () => {
   const btnClickHandler = () => {
@@ -30,9 +30,10 @@ const MenuTrigger: React.FC = () => {
   );
 };
 
-const Menu: React.FC = () => {
+const Menu: React.FC<{
+  currentCategory: string;
+}> = ({ currentCategory }) => {
   const open = useStore(MenuOpen);
-  const currentCategory = useStore(CurrentCategory);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -47,22 +48,20 @@ const Menu: React.FC = () => {
 
   const setSearchParams = async (value: string) => {
     if (value === "全部") {
-      CurrentCategory.set("全部");
       router.push(`${pathname}?page=1`);
     } else {
-      CurrentCategory.set(value);
       router.push(`${pathname}?page=1&category=${value}`);
     }
-    await sleep(100);
+
     btnClickHandler();
   };
 
   return (
     <div
       className={cn(
-        "fixed inset-0 z-20 flex items-center justify-center bg-white/80 backdrop-blur",
+        "fixed inset-0 z-20 flex h-full w-full items-center justify-center bg-white/80 backdrop-blur transition-opacity duration-300 ease-in-out",
         {
-          hidden: !open,
+          "pointer-events-none opacity-0": !open,
         },
       )}
     >
@@ -97,17 +96,4 @@ const Menu: React.FC = () => {
   );
 };
 
-const ToTop: React.FC = () => {
-  return (
-    <button
-      title="返回顶部"
-      aria-label="返回顶部"
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className="fixed bottom-6 right-6 z-20 flex h-10 w-10 items-center justify-center rounded-md bg-pink text-white shadow transition-colors hover:bg-rose-300 sm:bottom-24 sm:right-4 sm:h-12 sm:w-12"
-    >
-      <ChevronUp className="h-5 w-5" />
-    </button>
-  );
-};
-
-export { MenuTrigger, Menu, ToTop };
+export { MenuTrigger, Menu };

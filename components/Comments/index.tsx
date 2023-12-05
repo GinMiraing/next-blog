@@ -1,11 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useStore } from "@nanostores/react";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
 import Image from "next/legacy/image";
 import { usePathname } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -18,6 +19,8 @@ import {
 } from "@/lib/axios";
 import { FormatedComment, FormatedReply } from "@/lib/types";
 import { cn, sleep } from "@/lib/utils";
+
+import { Refresh, ReplyData } from "@/store/comment";
 
 const commentSchema = z.object({
   nick: z.string().min(1, { message: "昵称不能为空" }),
@@ -34,67 +37,11 @@ const commentSchema = z.object({
 
 type CommentValue = z.infer<typeof commentSchema>;
 
-const CommentsContext = createContext<{
-  replyData: {
-    isReply: boolean;
-    nick: string;
-    parentId: number;
-    replyId: number;
-    content: string;
-  };
-  setReplyData: React.Dispatch<
-    React.SetStateAction<{
-      isReply: boolean;
-      nick: string;
-      parentId: number;
-      replyId: number;
-      content: string;
-    }>
-  >;
-}>({
-  replyData: { isReply: false, nick: "", parentId: 0, replyId: 0, content: "" },
-  setReplyData: () => {},
-});
-
-const useComments = () => {
-  return useContext(CommentsContext);
-};
-
-const CommentsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [replyData, setReplyData] = useState<{
-    isReply: boolean;
-    nick: string;
-    parentId: number;
-    replyId: number;
-    content: string;
-  }>({
-    isReply: false,
-    nick: "",
-    parentId: 0,
-    replyId: 0,
-    content: "",
-  });
-  return (
-    <CommentsContext.Provider value={{ replyData, setReplyData }}>
-      {children}
-    </CommentsContext.Provider>
-  );
-};
-
 const replyBtnHandler = (
-  setReplyData: React.Dispatch<
-    React.SetStateAction<{
-      isReply: boolean;
-      nick: string;
-      parentId: number;
-      replyId: number;
-      content: string;
-    }>
-  >,
   comment: FormatedComment | FormatedReply,
   parenId: number,
 ) => {
-  setReplyData({
+  ReplyData.set({
     isReply: true,
     nick: comment.nick,
     parentId: parenId,
@@ -108,8 +55,6 @@ const replyBtnHandler = (
 };
 
 const Comments: React.FC = () => {
-  const [refresh, setRefresh] = useState(true);
-
   return (
     <div className="comments space-y-6">
       <div className="flex items-center justify-between">
@@ -119,17 +64,13 @@ const Comments: React.FC = () => {
         </h2>
         <hr className="w-full border-t border-dashed border-slate-300" />
       </div>
-      <CommentsProvider>
-        <CommentsInputForm setRefresh={setRefresh} />
-        <ParentCommentsList refresh={refresh} />
-      </CommentsProvider>
+      <CommentsInputForm />
+      <ParentCommentsList />
     </div>
   );
 };
 
-const CommentsInputForm: React.FC<{
-  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setRefresh }) => {
+const CommentsInputForm: React.FC = () => {
   const {
     register,
     handleSubmit,
@@ -146,7 +87,9 @@ const CommentsInputForm: React.FC<{
   });
 
   const pathname = usePathname();
-  const { replyData, setReplyData } = useComments();
+  const replyData = useStore(ReplyData);
+  const refresh = useStore(Refresh);
+
   const [loading, setLoading] = useState(false);
 
   const onSubmit: SubmitHandler<CommentValue> = async (data) => {
@@ -167,7 +110,7 @@ const CommentsInputForm: React.FC<{
           },
           authKey,
         });
-        setReplyData({
+        ReplyData.set({
           isReply: false,
           nick: "",
           parentId: 0,
@@ -187,7 +130,7 @@ const CommentsInputForm: React.FC<{
         });
       }
       reset();
-      setRefresh((prev) => !prev);
+      Refresh.set(!refresh);
     } catch (e) {
       console.log(e);
     } finally {
@@ -294,14 +237,13 @@ const CommentsInputForm: React.FC<{
   );
 };
 
-const ParentCommentsList: React.FC<{
-  refresh: boolean;
-}> = ({ refresh }) => {
+const ParentCommentsList: React.FC = () => {
   const [loading, setLoading] = useState<"wait" | "loading" | "success">(
     "wait",
   );
   const [commentList, setCommentList] = useState<FormatedComment[]>([]);
   const pathname = usePathname();
+  const refresh = useStore(Refresh);
 
   const fetchMainComments = async () => {
     try {
@@ -356,7 +298,6 @@ const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
   comment,
 }) => {
   const [show, setShow] = useState<"show" | "hide" | "init">("init");
-  const { setReplyData } = useComments();
 
   return (
     <div>
@@ -377,7 +318,7 @@ const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
               : "收起回复"}
           </button>
           <button
-            onClick={() => replyBtnHandler(setReplyData, comment, comment.id)}
+            onClick={() => replyBtnHandler(comment, comment.id)}
             className="hover:text-pink"
           >
             回复
@@ -453,14 +394,12 @@ const ReplyCommentsItem: React.FC<{
   comment: FormatedReply;
   parentId: number;
 }> = ({ comment, parentId }) => {
-  const { setReplyData } = useComments();
-
   return (
     <div>
       <BaseCommentItem comment={comment}>
         <div className="flex justify-end text-sm sm:text-base">
           <button
-            onClick={() => replyBtnHandler(setReplyData, comment, parentId)}
+            onClick={() => replyBtnHandler(comment, parentId)}
             className="hover:text-pink"
           >
             回复
