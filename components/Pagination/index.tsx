@@ -1,18 +1,16 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
 const Pagination: React.FC<{
   currentPage: number;
   totalPage: number;
-}> = ({ currentPage, totalPage }) => {
+  currentCategory?: string;
+}> = ({ currentPage, totalPage, currentCategory }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const category = searchParams.get("category");
 
   const pages = [currentPage - 1, currentPage, currentPage + 1].filter(
     (item) => item > 1 && item < totalPage,
@@ -23,7 +21,9 @@ const Pagination: React.FC<{
       <button
         onClick={() =>
           router.push(
-            `${pathname}?page=1${category ? `&category=${category}` : ""}`,
+            `${pathname}?page=1${
+              currentCategory ? `&category=${currentCategory}` : ""
+            }`,
           )
         }
         disabled={currentPage === 1}
@@ -44,7 +44,7 @@ const Pagination: React.FC<{
           onClick={() =>
             router.push(
               `${pathname}?page=${page}${
-                category ? `&category=${category}` : ""
+                currentCategory ? `&category=${currentCategory}` : ""
               }`,
             )
           }
@@ -65,7 +65,7 @@ const Pagination: React.FC<{
         onClick={() =>
           router.push(
             `${pathname}?page=${totalPage}${
-              category ? `&category=${category}` : ""
+              currentCategory ? `&category=${currentCategory}` : ""
             }`,
           )
         }

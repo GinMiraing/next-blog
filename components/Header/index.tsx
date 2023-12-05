@@ -1,20 +1,15 @@
 "use client";
 
-import { useStore } from "@nanostores/react";
+import { Menu } from "lucide-react";
 import Image from "next/legacy/image";
 import Link from "next/link";
+import { useState } from "react";
 
 import { BasicSettings, NavbarItems } from "@/lib/setting";
 import { cn } from "@/lib/utils";
 
-import NavBar from "@/components/Navbar";
-
-import { CurrentCategory } from "@/store/menu";
-import { NavbarOpen } from "@/store/navbar";
-
 const Header: React.FC = () => {
-  const open = useStore(NavbarOpen);
-  const currentCategory = useStore(CurrentCategory);
+  const [open, setOpen] = useState(false);
 
   return (
     <div
@@ -30,9 +25,7 @@ const Header: React.FC = () => {
         <div className="flex h-20 w-full max-w-5xl items-center justify-between p-6">
           <div className="flex items-center space-x-6">
             <Link
-              href={`/?page=1${
-                currentCategory === "全部" ? "" : `&category=${currentCategory}`
-              }`}
+              href="/"
               className="relative h-9 w-9 overflow-hidden rounded-full border sm:h-12 sm:w-12"
             >
               <Image
@@ -44,21 +37,40 @@ const Header: React.FC = () => {
               />
             </Link>
             <Link
-              href={`/?page=1${
-                currentCategory === "全部" ? "" : `&category=${currentCategory}`
-              }`}
+              href="/"
               className="font-medium text-lg transition-colors hover:text-pink sm:text-2xl"
             >
               {BasicSettings.name}
             </Link>
           </div>
-          <NavBar />
+          <nav className="flex items-center">
+            <div className="hidden space-x-6 sm:block">
+              {NavbarItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.link}
+                  className="underline-offset-4 transition-colors hover:text-pink hover:underline"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            <button
+              type="button"
+              title="打开导航栏"
+              aria-label="打开导航栏"
+              className="transition-colors hover:text-pink sm:hidden"
+              onClick={() => setOpen((prev) => !prev)}
+            >
+              <Menu />
+            </button>
+          </nav>
         </div>
       </div>
       <div className="flex flex-col">
         {NavbarItems.map((item) => (
           <Link
-            onClick={() => NavbarOpen.set(false)}
+            onClick={() => setOpen(false)}
             key={item.name}
             href={item.link}
             className="flex h-14 w-full items-center justify-center transition-colors hover:bg-gray-100 hover:text-pink"
