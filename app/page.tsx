@@ -1,4 +1,4 @@
-import { Menu, MenuTrigger } from "@/components/Menu";
+import Menu from "@/components/Menu";
 import Pagination from "@/components/Pagination";
 import Postcard from "@/components/Postcard";
 
@@ -49,8 +49,8 @@ export default function Page({
       <Pagination
         currentPage={intPage}
         totalPage={totalPage}
+        currentCategory={category}
       />
-      <MenuTrigger />
       <Menu currentCategory={category || "全部"} />
     </div>
   );

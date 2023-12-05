@@ -1,5 +1,3 @@
-"use client";
-
 import { ChevronRight, Tag } from "lucide-react";
 import Link from "next/link";
 
