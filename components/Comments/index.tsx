@@ -195,7 +195,7 @@ const CommentsInputForm: React.FC<{
               <div className="text-sm sm:text-base">
                 你正在回复：{" "}
                 <a
-                  className="hover:text-pink"
+                  className="transition-colors hover:text-pink"
                   href={`${pathname}#${replyData.replyId}`}
                 >
                   {replyData.nick}
@@ -269,7 +269,7 @@ const CommentsInputForm: React.FC<{
           </div>
           <button
             disabled={loading}
-            className="rounded bg-pink px-4 py-2 text-white hover:opacity-70"
+            className="rounded bg-pink px-4 py-2 text-white transition-opacity hover:opacity-70"
             type="submit"
           >
             {loading ? <Loader2 className="animate-spin" /> : "提交"}
@@ -374,7 +374,7 @@ const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
                 show === "init" ? "show" : show === "show" ? "hide" : "show",
               )
             }
-            className={cn("hover:text-pink", {
+            className={cn("transition-colors hover:text-pink", {
               invisible: comment.reply === 0,
             })}
           >
@@ -384,7 +384,7 @@ const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
           </button>
           <button
             onClick={() => replyBtnHandler({ comment, parentId: comment.id })}
-            className="hover:text-pink"
+            className="transition-colors hover:text-pink"
           >
             回复
           </button>
@@ -487,7 +487,7 @@ const ReplyCommentsItem: React.FC<{
         <div className="flex justify-end text-sm sm:text-base">
           <button
             onClick={() => replyBtnHandler({ comment, parentId })}
-            className="hover:text-pink"
+            className="transition-colors hover:text-pink"
           >
             回复
           </button>
@@ -533,7 +533,7 @@ const BaseCommentItem: React.FC<{
           <div className="no-scrollbar flex items-center space-x-2 overflow-scroll sm:space-x-3">
             {comment.link ? (
               <a
-                className="whitespace-nowrap text-lg hover:text-pink"
+                className="whitespace-nowrap text-lg transition-colors hover:text-pink"
                 href={comment.link}
                 target="_blank"
               >
@@ -546,7 +546,7 @@ const BaseCommentItem: React.FC<{
               <div>{dayjs(comment.id).format("YYYY-MM-DD HH:mm:ss")}</div>
             </div>
             {comment.isAdmin && (
-              <div className="whitespace-nowrap rounded-md bg-blue-100 px-1.5 text-sm dark:bg-pink">
+              <div className="whitespace-nowrap rounded-md bg-blue-100 px-1.5 text-sm">
                 博主
               </div>
             )}
@@ -555,7 +555,7 @@ const BaseCommentItem: React.FC<{
             <p className="whitespace-pre-wrap text-justify text-sm/6 sm:text-base/7">
               {comment.replyNick && (
                 <a
-                  className="mr-2 bg-yellow-200 hover:text-pink dark:bg-yellow-600"
+                  className="mr-2 bg-yellow-200 transition-colors hover:text-pink"
                   href={`${pathname}#${comment.replyId}`}
                 >
                   @{comment.replyNick}
