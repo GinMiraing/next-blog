@@ -1,12 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useStore } from "@nanostores/react";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
 import Image from "next/legacy/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -19,8 +18,6 @@ import {
 } from "@/lib/axios";
 import { FormatedComment, FormatedReply } from "@/lib/types";
 import { cn, sleep } from "@/lib/utils";
-
-import { Refresh, ReplyData } from "@/store/comment";
 
 const commentSchema = z.object({
   nick: z.string().min(1, { message: "昵称不能为空" }),
@@ -37,24 +34,39 @@ const commentSchema = z.object({
 
 type CommentValue = z.infer<typeof commentSchema>;
 
-const replyBtnHandler = (
-  comment: FormatedComment | FormatedReply,
-  parenId: number,
-) => {
-  ReplyData.set({
-    isReply: true,
-    nick: comment.nick,
-    parentId: parenId,
-    replyId: comment.id,
-    content: comment.content,
-  });
-  const contentDOM = document.getElementById("content");
-  if (contentDOM) {
-    contentDOM.focus();
+type CommentFormData = {
+  isReply: boolean;
+  nick?: string;
+  parentId: number;
+  replyId: number;
+  content?: string;
+};
+
+const CommentFormContext = createContext<{
+  data: CommentFormData;
+  setData: React.Dispatch<React.SetStateAction<CommentFormData>>;
+} | null>(null);
+
+const useCommentFormContext = () => {
+  const context = useContext(CommentFormContext);
+
+  if (!context) {
+    throw new Error("CommentFormContext not found");
   }
+
+  return context;
 };
 
 const Comments: React.FC = () => {
+  const [formData, setFormData] = useState<CommentFormData>({
+    isReply: false,
+    nick: "",
+    parentId: 0,
+    replyId: 0,
+    content: "",
+  });
+  const [reloading, setReloading] = useState(false);
+
   return (
     <div className="comments space-y-6">
       <div className="flex items-center justify-between">
@@ -64,18 +76,25 @@ const Comments: React.FC = () => {
         </h2>
         <hr className="w-full border-t border-dashed border-slate-300" />
       </div>
-      <CommentsInputForm />
-      <ParentCommentsList />
+      <CommentFormContext.Provider
+        value={{ data: formData, setData: setFormData }}
+      >
+        <CommentsInputForm setReloading={setReloading} />
+        <ParentCommentsList reloading={reloading} />
+      </CommentFormContext.Provider>
     </div>
   );
 };
 
-const CommentsInputForm: React.FC = () => {
+const CommentsInputForm: React.FC<{
+  setReloading: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setReloading }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<CommentValue>({
     resolver: zodResolver(commentSchema),
     defaultValues: {
@@ -85,19 +104,26 @@ const CommentsInputForm: React.FC = () => {
       content: "",
     },
   });
-
   const pathname = usePathname();
-  const replyData = useStore(ReplyData);
-  const refresh = useStore(Refresh);
+  const { data: replyData, setData } = useCommentFormContext();
 
   const [loading, setLoading] = useState(false);
 
   const onSubmit: SubmitHandler<CommentValue> = async (data) => {
+    window.localStorage.setItem(
+      "comment_metadata",
+      JSON.stringify({
+        nick: data.nick,
+        email: data.email,
+        link: data.link,
+      }),
+    );
     setLoading(true);
     const { nick, email, link, content } = data;
 
     try {
       const authKey = await getAuthKey();
+
       if (replyData.isReply) {
         await createReply({
           data: {
@@ -110,7 +136,7 @@ const CommentsInputForm: React.FC = () => {
           },
           authKey,
         });
-        ReplyData.set({
+        setData({
           isReply: false,
           nick: "",
           parentId: 0,
@@ -129,8 +155,10 @@ const CommentsInputForm: React.FC = () => {
           authKey,
         });
       }
-      reset();
-      Refresh.set(!refresh);
+      reset({
+        content: "",
+      });
+      setReloading((prev) => !prev);
     } catch (e) {
       console.log(e);
     } finally {
@@ -142,6 +170,21 @@ const CommentsInputForm: React.FC = () => {
     e.currentTarget.style.height = "0px";
     e.currentTarget.style.height = `${e.currentTarget.scrollHeight + 56}px`;
   };
+
+  useEffect(() => {
+    const commentMetadata = window.localStorage.getItem("comment_metadata");
+
+    try {
+      if (commentMetadata) {
+        const { nick, email, link } = JSON.parse(commentMetadata);
+        setValue("nick", nick);
+        setValue("email", email);
+        setValue("link", link);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -158,7 +201,7 @@ const CommentsInputForm: React.FC = () => {
                   {replyData.nick}
                 </a>
               </div>
-              <div className="mt-4 border-l-4 border-pink pl-4 text-sm sm:text-base">
+              <div className="comments-content mt-4 w-full rounded-md bg-red-50 px-2 py-4 sm:px-4">
                 <p className="whitespace-pre-wrap text-justify text-sm/6 sm:text-base/7">
                   {replyData.content}
                 </p>
@@ -169,7 +212,7 @@ const CommentsInputForm: React.FC = () => {
             placeholder="请填写评论内容"
             id="content"
             onInput={(e) => textareaInputHandler(e)}
-            className="mt-4 h-24 w-full overflow-hidden whitespace-pre-wrap rounded-md border border-neutral-200 bg-gray-50 p-2 text-sm/6 outline-none placeholder:text-xs/6 focus:border-rose-300 sm:text-base sm:placeholder:text-sm/6"
+            className="mt-4 h-24 w-full resize-none overflow-hidden whitespace-pre-wrap rounded-md border border-neutral-200 bg-gray-50 p-2 text-sm/6 outline-none placeholder:text-xs/6 focus:border-rose-300 sm:text-base sm:placeholder:text-sm/6"
             {...register("content")}
           ></textarea>
         </div>
@@ -237,13 +280,14 @@ const CommentsInputForm: React.FC = () => {
   );
 };
 
-const ParentCommentsList: React.FC = () => {
+const ParentCommentsList: React.FC<{ reloading: boolean }> = ({
+  reloading,
+}) => {
   const [loading, setLoading] = useState<"wait" | "loading" | "success">(
     "wait",
   );
   const [commentList, setCommentList] = useState<FormatedComment[]>([]);
   const pathname = usePathname();
-  const refresh = useStore(Refresh);
 
   const fetchMainComments = async () => {
     try {
@@ -263,7 +307,7 @@ const ParentCommentsList: React.FC = () => {
 
   useEffect(() => {
     fetchMainComments();
-  }, [refresh]);
+  }, [reloading]);
 
   if (loading === "loading") {
     return (
@@ -297,7 +341,28 @@ const ParentCommentsList: React.FC = () => {
 const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
   comment,
 }) => {
+  const { setData } = useCommentFormContext();
   const [show, setShow] = useState<"show" | "hide" | "init">("init");
+
+  const replyBtnHandler = ({
+    comment,
+    parentId,
+  }: {
+    comment: FormatedComment;
+    parentId: number;
+  }) => {
+    setData({
+      isReply: true,
+      nick: comment.nick,
+      parentId,
+      replyId: comment.id,
+      content: comment.content,
+    });
+    const contentDOM = document.getElementById("content");
+    if (contentDOM) {
+      contentDOM.focus();
+    }
+  };
 
   return (
     <div>
@@ -318,7 +383,7 @@ const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
               : "收起回复"}
           </button>
           <button
-            onClick={() => replyBtnHandler(comment, comment.id)}
+            onClick={() => replyBtnHandler({ comment, parentId: comment.id })}
             className="hover:text-pink"
           >
             回复
@@ -394,12 +459,34 @@ const ReplyCommentsItem: React.FC<{
   comment: FormatedReply;
   parentId: number;
 }> = ({ comment, parentId }) => {
+  const { setData } = useCommentFormContext();
+
+  const replyBtnHandler = ({
+    comment,
+    parentId,
+  }: {
+    comment: FormatedReply;
+    parentId: number;
+  }) => {
+    setData({
+      isReply: true,
+      nick: comment.nick,
+      parentId,
+      replyId: comment.id,
+      content: comment.content,
+    });
+    const contentDOM = document.getElementById("content");
+    if (contentDOM) {
+      contentDOM.focus();
+    }
+  };
+
   return (
     <div>
       <BaseCommentItem comment={comment}>
         <div className="flex justify-end text-sm sm:text-base">
           <button
-            onClick={() => replyBtnHandler(comment, parentId)}
+            onClick={() => replyBtnHandler({ comment, parentId })}
             className="hover:text-pink"
           >
             回复

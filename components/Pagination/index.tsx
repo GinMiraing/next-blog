@@ -1,15 +1,13 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
 const Pagination: React.FC<{
   currentPage: number;
   totalPage: number;
-  currentCategory?: string;
-}> = ({ currentPage, totalPage, currentCategory }) => {
-  const pathname = usePathname();
+}> = ({ currentPage, totalPage }) => {
   const router = useRouter();
 
   const pages = [currentPage - 1, currentPage, currentPage + 1].filter(
@@ -19,15 +17,9 @@ const Pagination: React.FC<{
   return (
     <div className="flex items-center justify-center space-x-2">
       <button
-        onClick={() =>
-          router.push(
-            `${pathname}?page=1${
-              currentCategory ? `&category=${currentCategory}` : ""
-            }`,
-          )
-        }
+        onClick={() => router.push("/")}
         disabled={currentPage === 1}
-        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-50 disabled:bg-pink disabled:text-white"
+        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100 disabled:bg-pink disabled:text-white"
       >
         1
       </button>
@@ -43,13 +35,12 @@ const Pagination: React.FC<{
           key={page}
           onClick={() =>
             router.push(
-              `${pathname}?page=${page}${
-                currentCategory ? `&category=${currentCategory}` : ""
-              }`,
+              `/?page=${page}
+                `,
             )
           }
           disabled={page === currentPage}
-          className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-50 disabled:bg-pink disabled:text-white"
+          className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100 disabled:bg-pink disabled:text-white"
         >
           {page}
         </button>
@@ -62,16 +53,10 @@ const Pagination: React.FC<{
         ...
       </div>
       <button
-        onClick={() =>
-          router.push(
-            `${pathname}?page=${totalPage}${
-              currentCategory ? `&category=${currentCategory}` : ""
-            }`,
-          )
-        }
+        onClick={() => router.push(`/?page=${totalPage}`)}
         disabled={currentPage === totalPage}
         className={cn(
-          "flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-50 disabled:bg-pink disabled:text-white",
+          "flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100 disabled:bg-pink disabled:text-white",
           {
             hidden: totalPage === 1,
           },

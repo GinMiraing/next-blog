@@ -7,6 +7,10 @@ export const BasicSettings = {
 
 export const NavbarItems = [
   {
+    name: "分类",
+    link: "/category/",
+  },
+  {
     name: "友链",
     link: "/link/",
   },
@@ -51,13 +55,6 @@ export const FriendsLinkItems = [
     name: "林木云",
     description: "一个记录个人经验的网站",
     avatar: "https://img.15xd.cn/favicon.png",
-  },
-  {
-    link: "https://yvu.cc",
-    name: "小予",
-    description: "愿山野浓雾都有路灯风...",
-    avatar:
-      "https://cravatar.cn/avatar/9581bec449e7289c8b0a77f949d5bbea?s=100&d=mm&r=g",
   },
 ];
 

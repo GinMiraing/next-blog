@@ -16,7 +16,7 @@ const Header: React.FC = () => {
       className={cn(
         "fixed left-0 right-0 top-0 z-10 overflow-hidden border-b bg-background shadow transition-all duration-500 ease-in-out md:max-h-[5rem]",
         {
-          "max-h-[8.5rem]": open,
+          "max-h-[12rem]": open,
           "max-h-[5rem]": !open,
         },
       )}
