@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="min-h-[calc(100vh-10rem)] space-y-6 py-6">
+    <div className="min-h-[calc(100vh-10rem)] animate-fade space-y-6 py-6">
       <FriendsLink />
       <Comments />
     </div>

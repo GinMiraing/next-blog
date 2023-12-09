@@ -1,4 +1,3 @@
-import Menu from "@/components/Menu";
 import Pagination from "@/components/Pagination";
 import Postcard from "@/components/Postcard";
 
@@ -9,10 +8,9 @@ export const revalidate = 60;
 export default function Page({
   searchParams,
 }: {
-  searchParams: { page?: string; category?: string };
+  searchParams: { page?: string };
 }) {
   const page = searchParams.page || "1";
-  const category = searchParams.category;
 
   if (isNaN(parseInt(page))) {
     throw new Error("查询参数错误");
@@ -20,13 +18,9 @@ export default function Page({
 
   const intPage = parseInt(page);
 
-  const sortedPosts = allPosts
-    .sort((a, b) => {
-      return a.id < b.id ? 1 : -1;
-    })
-    .filter((post) => {
-      return category ? post.category === category : true;
-    });
+  const sortedPosts = allPosts.sort((a, b) => {
+    return a.id < b.id ? 1 : -1;
+  });
 
   if (sortedPosts.length === 0) {
     throw new Error("未找到任何文章");
@@ -37,7 +31,10 @@ export default function Page({
   const totalPage = Math.ceil(sortedPosts.length / 7);
 
   return (
-    <div className="min-h-[calc(100vh-10rem)] py-6">
+    <div
+      key={page}
+      className="min-h-[calc(100vh-10rem)] animate-fade py-6"
+    >
       <div className="divide-y divide-dashed divide-slate-300">
         {list.map((post) => (
           <Postcard
@@ -49,9 +46,7 @@ export default function Page({
       <Pagination
         currentPage={intPage}
         totalPage={totalPage}
-        currentCategory={category}
       />
-      <Menu currentCategory={category || "全部"} />
     </div>
   );
 }
