@@ -1,28 +1,17 @@
 import Link from "next/link";
 
-import { FooterItems } from "@/lib/setting";
-
 const Footer: React.FC = () => {
   return (
-    <div className="flex h-20 flex-col items-center justify-between border-t bg-white px-6 py-4 sm:flex-row sm:p-6">
-      <div className="text-sm sm:text-base">©️ 2023 胤 版权所有</div>
-      <div className="flex items-center space-x-2 text-sm sm:text-base">
-        <Link
-          target="_blank"
-          className="underline-offset-4 transition-colors hover:text-pink hover:underline"
-          href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
-        >
-          CC BY-NC-SA 4.0
-        </Link>
-        {FooterItems.map((item) => (
-          <img
-            src={item.src}
-            alt={item.name}
-            key={item.name}
-            className="h-4 w-4 sm:h-5 sm:w-5"
-          />
-        ))}
-      </div>
+    <div className="flex h-20 items-center justify-between space-x-4 border-t bg-white px-6 py-4 text-sm sm:p-6 sm:text-base">
+      <div>©️ 2023 胤 版权所有</div>
+      <Link
+        className="transition-colors hover:text-pink"
+        href="https://beian.miit.gov.cn"
+        target="_blank"
+        referrerPolicy="no-referrer"
+      >
+        闽 ICP 备 2021019269 号
+      </Link>
     </div>
   );
 };
