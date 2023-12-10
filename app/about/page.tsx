@@ -1,11 +1,13 @@
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import dynamic from "next/dynamic";
 import Image from "next/legacy/image";
 import Link from "next/link";
 
 import { AboutAnimates, AboutTools } from "@/lib/setting";
 
 import AboutGallary from "@/components/AboutGallary";
-import Comments from "@/components/Comments";
+
+const Comments = dynamic(() => import("@/components/Comments"));
 
 export default function Page() {
   return (
