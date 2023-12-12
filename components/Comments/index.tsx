@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -17,6 +18,7 @@ import CommentList from "./CommentList";
 import ReplyPreview from "./ReplyPreview";
 
 const CommentSchema = z.object({
+  content: z.string().min(1, { message: "评论内容不能为空" }).max(200),
   nick: z.string().min(1, { message: "昵称不能为空" }),
   email: z
     .string()
@@ -26,7 +28,6 @@ const CommentSchema = z.object({
     z.string().url({ message: "链接格式不正确" }),
     z.string().length(0),
   ]),
-  content: z.string().min(1, { message: "评论内容不能为空" }).max(200),
   parentId: z.number().optional(),
   replyId: z.number().optional(),
   replyNick: z.string().optional(),
@@ -72,9 +73,7 @@ const ParentComments: React.FC<{
   const pathname = usePathname();
   const { setValue, setFocus } = useFormContext<CommentValue>();
 
-  const [replyState, setReplyState] = useState<"beforeLoad" | "show" | "hide">(
-    "beforeLoad",
-  );
+  const [replyShowList, setReplyShowList] = useState<number[]>([]);
 
   const replyBtnHandler = ({ comment }: { comment: FormatedComment }) => {
     setValue("replyId", comment.id);
@@ -104,21 +103,14 @@ const ParentComments: React.FC<{
             <div className="flex items-center justify-between text-sm sm:text-base">
               <button
                 onClick={() =>
-                  setReplyState(
-                    replyState === "beforeLoad"
-                      ? "show"
-                      : replyState === "show"
-                      ? "hide"
-                      : "show",
-                  )
+                  setReplyShowList((prev) => [...prev, comment.id])
                 }
                 className={cn("transition-colors hover:text-pink", {
-                  invisible: comment.reply === 0,
+                  invisible:
+                    comment.reply === 0 || replyShowList.includes(comment.id),
                 })}
               >
-                {replyState === "beforeLoad" || replyState === "hide"
-                  ? `展开回复（${comment.reply}）`
-                  : "收起回复"}
+                {`展开回复（${comment.reply}）`}
               </button>
               <button
                 onClick={() => replyBtnHandler({ comment })}
@@ -128,12 +120,8 @@ const ParentComments: React.FC<{
               </button>
             </div>
           </CommentItem>
-          {replyState !== "beforeLoad" && (
-            <div
-              className={cn("ml-14 mt-6", {
-                hidden: replyState === "hide",
-              })}
-            >
+          {replyShowList.includes(comment.id) && (
+            <div className="ml-14 mt-6">
               <ReplyComments parentId={comment.id} />
             </div>
           )}
@@ -165,7 +153,14 @@ const ReplyComments: React.FC<{ parentId: number }> = ({ parentId }) => {
     try {
       setLoading("loading");
       await sleep(1000);
-      setReplies(await getRepliesByParentId({ parentId }));
+
+      const res = await axios.get<{ data: FormatedReply[] }>("/api/replies", {
+        params: {
+          parentId,
+        },
+      });
+
+      setReplies(res.data.data);
     } catch (error) {
       console.log(error);
     } finally {

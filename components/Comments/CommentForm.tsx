@@ -8,6 +8,8 @@ import {
   useFormContext,
 } from "react-hook-form";
 
+import { sleep } from "@/lib/utils";
+
 import { CommentValue } from ".";
 
 const CommentForm: React.FC = () => {
@@ -28,6 +30,8 @@ const CommentForm: React.FC = () => {
   const onSubmit: SubmitHandler<CommentValue> = async (data) => {
     setLoading(true);
 
+    await sleep(1000);
+
     try {
       console.log(data);
     } catch (e) {
@@ -38,6 +42,8 @@ const CommentForm: React.FC = () => {
   };
 
   const OnError: SubmitErrorHandler<CommentValue> = async (errors) => {
+    console.log(errors);
+
     for (const error of Object.values(errors)) {
       setError("root", { message: error.message }, { shouldFocus: false });
       break;
@@ -101,7 +107,7 @@ const CommentForm: React.FC = () => {
           </div>
           <button
             disabled={loading}
-            className="rounded bg-pink px-4 py-2 text-white transition-opacity hover:opacity-70"
+            className="rounded bg-pink px-4 py-2 text-white transition-opacity hover:opacity-70 disabled:opacity-70"
             type="submit"
           >
             {loading ? <Loader2 className="animate-spin" /> : "提交"}

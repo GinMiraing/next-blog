@@ -43,9 +43,7 @@ export async function GET(request: NextRequest) {
       })),
       isError: false,
     }),
-    {
-      status: 200,
-    },
+    { status: 200 },
   );
 }
 
