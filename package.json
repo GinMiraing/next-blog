@@ -27,6 +27,7 @@
     "react-hook-form": "^7.47.0",
     "rehype-shiki": "^0.0.9",
     "remark-gfm": "^4.0.0",
+    "server-only": "^0.0.1",
     "tailwindcss-animated": "^1.0.1",
     "zod": "^3.22.4"
   },

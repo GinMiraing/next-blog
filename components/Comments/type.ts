@@ -17,3 +17,26 @@ export type CommentItemType = {
   replyId?: number;
   replyNick?: string;
 };
+
+export type FormatedComment = {
+  id: number;
+  nick: string;
+  emailMd5: string;
+  link: string;
+  content: string;
+  isAdmin: boolean;
+  isHidden: boolean;
+  reply: number;
+};
+
+export type FormatedReply = {
+  id: number;
+  nick: string;
+  emailMd5: string;
+  link: string;
+  content: string;
+  isAdmin: boolean;
+  isHidden: boolean;
+  replyId: number;
+  replyNick: string;
+};
