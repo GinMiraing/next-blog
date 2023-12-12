@@ -14,11 +14,11 @@ export default function Page({
   const category = searchParams.category;
 
   const sortedPosts = allPosts
-    .sort((a, b) => {
-      return a.id < b.id ? 1 : -1;
-    })
     .filter((post) => {
       return category ? post.category === category : true;
+    })
+    .sort((a, b) => {
+      return a.id < b.id ? 1 : -1;
     });
 
   if (sortedPosts.length === 0) {

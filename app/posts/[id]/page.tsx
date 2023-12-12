@@ -3,7 +3,10 @@ import { Tag } from "lucide-react";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 
+import { getCommentsByPath } from "@/lib/backend";
 import { BasicSettings } from "@/lib/setting";
+
+import { FormatedComment } from "@/components/Comments/type";
 
 import { allPosts } from "@/.contentlayer/generated";
 
@@ -29,13 +32,26 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default function Page({ params }: { params: { id: string } }) {
+export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
   const post = allPosts.find((post) => post._raw.flattenedPath === id);
 
   if (!post) {
     notFound();
   }
+
+  const comments = await getCommentsByPath(`/posts/${id}`);
+
+  const data: FormatedComment[] = comments.map((comment) => ({
+    id: comment._id,
+    nick: comment.nick,
+    emailMd5: comment.email_md5,
+    link: comment.link,
+    content: comment.content,
+    isAdmin: comment.is_admin,
+    isHidden: comment.is_hidden,
+    reply: comment.reply,
+  }));
 
   return (
     <div className="min-h-[calc(100vh-10rem)] py-6">
@@ -47,7 +63,7 @@ export default function Page({ params }: { params: { id: string } }) {
           <Tag className="h-4 w-4" />
           <span>{post.category}</span>
         </div>
-        <Comments />
+        <Comments data={data} />
       </div>
     </div>
   );
