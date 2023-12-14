@@ -1,6 +1,8 @@
 "use client";
 
+import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   SubmitErrorHandler,
@@ -8,16 +10,18 @@ import {
   useFormContext,
 } from "react-hook-form";
 
-import { sleep } from "@/lib/utils";
-
 import { CommentValue } from ".";
 
 const CommentForm: React.FC = () => {
+  const pathname = usePathname();
+  const route = useRouter();
+
   const {
     handleSubmit,
     formState: { errors },
     register,
     setError,
+    reset,
   } = useFormContext<CommentValue>();
 
   const [loading, setLoading] = useState(false);
@@ -30,10 +34,42 @@ const CommentForm: React.FC = () => {
   const onSubmit: SubmitHandler<CommentValue> = async (data) => {
     setLoading(true);
 
-    await sleep(1000);
-
     try {
-      console.log(data);
+      const authKey = await axios.get<{ data: string }>("/api/auth");
+
+      if (!authKey.data.data) {
+        throw new Error("auth key not found");
+      }
+
+      if (data.replyNick) {
+        await axios.post("/api/replies", data, {
+          headers: {
+            "Api-Key": authKey.data.data,
+          },
+        });
+      } else {
+        await axios.post(
+          "/api/comments",
+          {
+            ...data,
+            path: pathname,
+          },
+          {
+            headers: {
+              "Api-Key": authKey.data.data,
+            },
+          },
+        );
+      }
+
+      route.refresh();
+      reset({
+        content: "",
+        replyNick: "",
+        replyContent: "",
+        replyId: 0,
+        parentId: 0,
+      });
     } catch (e) {
       console.log(e);
     } finally {

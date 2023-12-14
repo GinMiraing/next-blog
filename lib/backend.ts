@@ -3,6 +3,8 @@ import axios from "axios";
 import { CommentSchema, ReplySchema } from "./types";
 import { NextResponse } from "next/server";
 
+export const revalidate = 0;
+
 const axiosInstance = axios.create({
   baseURL: process.env.BACKEND_HOST,
   headers: {
@@ -105,9 +107,20 @@ export const createReply = async (
   },
   authKey: string,
 ) => {
-  await axiosInstance.post("/replies", data, {
-    headers: {
-      "Api-Key": authKey,
+  await axiosInstance.post(
+    "/replies",
+    {
+      nick: data.nick,
+      email: data.email,
+      link: data.link,
+      content: data.content,
+      parent_id: data.parentId,
+      reply_id: data.replyId,
     },
-  });
+    {
+      headers: {
+        "Api-Key": authKey,
+      },
+    },
+  );
 };

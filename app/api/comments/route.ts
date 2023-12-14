@@ -1,9 +1,8 @@
-import {
-  badRequest,
-  createComment,
-  forbidden,
-  getCommentsByPath,
-} from "@/lib/backend";
+import { badRequest, createComment, forbidden } from "@/lib/backend";
+import connectDB from "@/lib/mongodb/connect";
+import Comment from "@/lib/mongodb/schema/comment";
+import { CommentRaw } from "@/lib/mongodb/type";
+import RedisClient from "@/lib/redis/connect";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -18,33 +17,64 @@ const CreateCommentDto = z.object({
 export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  try {
+    const { searchParams } = new URL(request.url);
 
-  const path = searchParams.get("path");
+    const path = searchParams.get("path");
 
-  if (!path) {
-    return badRequest();
-  }
+    if (!path) {
+      return badRequest();
+    }
 
-  const data = await getCommentsByPath(path);
+    const cachedComments = await RedisClient.get(`comments:${path}`);
 
-  return new NextResponse(
-    JSON.stringify({
+    if (cachedComments) {
+      return NextResponse.json(JSON.parse(cachedComments));
+    }
+
+    await connectDB();
+    const data: CommentRaw[] = await Comment.find({
+      path,
+    })
+      .select([
+        "_id",
+        "nick",
+        "email_md5",
+        "link",
+        "content",
+        "is_admin",
+        "is_hidden",
+        "reply",
+      ])
+      .sort({
+        _id: -1,
+      })
+      .exec();
+
+    await RedisClient.set(
+      `comments:${path}`,
+      JSON.stringify({
+        message: "get comments success",
+        data,
+        isError: false,
+      }),
+    );
+
+    return NextResponse.json({
       message: "get comments success",
-      data: data.map((comment) => ({
-        id: comment._id,
-        nick: comment.nick,
-        emailMd5: comment.email_md5,
-        link: comment.link,
-        content: comment.content,
-        isAdmin: comment.is_admin,
-        isHidden: comment.is_hidden,
-        reply: comment.reply,
-      })),
+      data,
       isError: false,
-    }),
-    { status: 200 },
-  );
+    });
+  } catch (e) {
+    return new NextResponse(
+      JSON.stringify({
+        message: "get comments failed",
+        data: null,
+        isError: true,
+      }),
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -68,9 +98,7 @@ export async function POST(request: NextRequest) {
     return badRequest();
   }
 
-  console.log(data);
-
-  // await createComment(data, authKey);
+  await createComment(data, authKey);
 
   return new NextResponse(
     JSON.stringify({

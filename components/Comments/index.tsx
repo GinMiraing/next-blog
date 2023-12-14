@@ -8,7 +8,6 @@ import React, { useEffect, useState } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
-import { getRepliesByParentId } from "@/lib/axios";
 import { FormatedComment, FormatedReply } from "@/lib/types";
 import { cn, sleep } from "@/lib/utils";
 
