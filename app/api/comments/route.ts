@@ -1,12 +1,27 @@
-import { badRequest, createComment, forbidden } from "@/lib/backend";
-import connectDB from "@/lib/mongodb/connect";
-import Comment from "@/lib/mongodb/schema/comment";
-import { CommentRaw } from "@/lib/mongodb/type";
-import RedisClient from "@/lib/redis/connect";
+import {
+  badRequest,
+  checkAuthKey,
+  createComment,
+  deleteAuthKey,
+  forbidden,
+  getCommentsByPath,
+  serverError,
+} from "@/lib/backend";
+
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-const CreateCommentDto = z.object({
+const ReplyDto = z.object({
+  nick: z.string().min(1),
+  email: z.string().email(),
+  link: z.union([z.string().url(), z.string().length(0)]),
+  content: z.string().min(1),
+  parentId: z.number(),
+  replyId: z.number(),
+  replyNick: z.string().min(1),
+});
+
+const CommentDto = z.object({
   nick: z.string().min(1),
   email: z.string().email(),
   link: z.union([z.string().url(), z.string().length(0)]),
@@ -26,85 +41,101 @@ export async function GET(request: NextRequest) {
       return badRequest();
     }
 
-    const cachedComments = await RedisClient.get(`comments:${path}`);
-
-    if (cachedComments) {
-      return NextResponse.json(JSON.parse(cachedComments));
-    }
-
-    await connectDB();
-    const data: CommentRaw[] = await Comment.find({
-      path,
-    })
-      .select([
-        "_id",
-        "nick",
-        "email_md5",
-        "link",
-        "content",
-        "is_admin",
-        "is_hidden",
-        "reply",
-      ])
-      .sort({
-        _id: -1,
-      })
-      .exec();
-
-    await RedisClient.set(
-      `comments:${path}`,
-      JSON.stringify({
-        message: "get comments success",
-        data,
-        isError: false,
-      }),
-    );
+    const comments = await getCommentsByPath(path);
 
     return NextResponse.json({
       message: "get comments success",
-      data,
+      data: comments.map((comment) => ({
+        id: comment.id,
+        nick: comment.nick,
+        emailMd5: comment.email_md5,
+        link: comment.link,
+        content: comment.content,
+        isAdmin: comment.is_admin,
+        timestamp: Number(comment.timestamp),
+        replyCount: comment.reply_count,
+        replyList: comment.reply_list.map((reply) => ({
+          id: reply.id,
+          nick: reply.nick,
+          emailMd5: reply.email_md5,
+          link: reply.link,
+          content: reply.content,
+          isAdmin: reply.is_admin,
+          timestamp: Number(reply.timestamp),
+          replyId: reply.reply_id,
+          replyNick: reply.reply_nick,
+        })),
+      })),
       isError: false,
     });
   } catch (e) {
-    return new NextResponse(
-      JSON.stringify({
-        message: "get comments failed",
-        data: null,
-        isError: true,
-      }),
-      { status: 500 },
-    );
+    console.log(e);
+
+    return serverError();
   }
 }
 
 export async function POST(request: NextRequest) {
-  const authKey = request.headers.get("Api-Key");
+  try {
+    const data: {
+      isReply: boolean;
+      nick: string;
+      email: string;
+      content: string;
+      path: string;
+      link?: string;
+      parentId?: number;
+      replyId?: number;
+      replyNick?: string;
+      authKey?: string;
+    } = await request.json();
 
-  if (!authKey) {
-    return forbidden();
+    if (!data.authKey) {
+      return forbidden();
+    }
+
+    const isAuthKeyValid = await checkAuthKey(data.authKey);
+
+    if (!isAuthKeyValid) {
+      return forbidden();
+    }
+
+    if (data.isReply) {
+      const { success } = ReplyDto.safeParse(data);
+      if (!success) {
+        return badRequest();
+      }
+    } else {
+      const { success } = CommentDto.safeParse(data);
+      if (!success) {
+        return badRequest();
+      }
+    }
+
+    await createComment({
+      is_reply: data.isReply,
+      nick: data.nick,
+      email: data.email,
+      content: data.content,
+      path: data.path,
+      link: data.link,
+      parent_id: data.parentId,
+      reply_id: data.replyId,
+      reply_nick: data.replyNick,
+    });
+
+    await deleteAuthKey(data.authKey);
+
+    return new NextResponse(
+      JSON.stringify({
+        message: "create comment success",
+        data: "create comment success",
+        isError: false,
+      }),
+    );
+  } catch (e) {
+    console.log(e);
+
+    return serverError();
   }
-
-  const data: {
-    nick: string;
-    email: string;
-    link: string;
-    content: string;
-    path: string;
-  } = await request.json();
-
-  const { success } = CreateCommentDto.safeParse(data);
-
-  if (!success) {
-    return badRequest();
-  }
-
-  await createComment(data, authKey);
-
-  return new NextResponse(
-    JSON.stringify({
-      message: "create comment success",
-      data: null,
-      isError: false,
-    }),
-  );
 }

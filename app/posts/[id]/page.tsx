@@ -3,10 +3,7 @@ import { Tag } from "lucide-react";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 
-import { getCommentsByPath } from "@/lib/backend";
 import { BasicSettings } from "@/lib/setting";
-
-import { FormatedComment } from "@/components/Comments/type";
 
 import { allPosts } from "@/.contentlayer/generated";
 
@@ -40,19 +37,6 @@ export default async function Page({ params }: { params: { id: string } }) {
     notFound();
   }
 
-  const comments = await getCommentsByPath(`/posts/${id}`);
-
-  const data: FormatedComment[] = comments.map((comment) => ({
-    id: comment._id,
-    nick: comment.nick,
-    emailMd5: comment.email_md5,
-    link: comment.link,
-    content: comment.content,
-    isAdmin: comment.is_admin,
-    isHidden: comment.is_hidden,
-    reply: comment.reply,
-  }));
-
   return (
     <div className="min-h-[calc(100vh-10rem)] py-6">
       <div className="animate-fade space-y-6">
@@ -63,7 +47,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           <Tag className="h-4 w-4" />
           <span>{post.category}</span>
         </div>
-        <Comments data={data} />
+        <Comments />
       </div>
     </div>
   );

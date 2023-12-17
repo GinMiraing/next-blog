@@ -1,30 +1,23 @@
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/legacy/image";
 import Link from "next/link";
 
-import { getCommentsByPath } from "@/lib/backend";
-import { AboutAnimates, AboutTools } from "@/lib/setting";
+import { AboutAnimates, AboutTools, BasicSettings } from "@/lib/setting";
 
 import AboutGallary from "@/components/AboutGallary";
-import { FormatedComment } from "@/components/Comments/type";
 
 const Comments = dynamic(() => import("@/components/Comments"));
 
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: `${BasicSettings.name} - 关于`,
+  description: `${BasicSettings.description}`,
+};
+
 export default async function Page() {
-  const comments = await getCommentsByPath("/about");
-
-  const data: FormatedComment[] = comments.map((comment) => ({
-    id: comment._id,
-    nick: comment.nick,
-    emailMd5: comment.email_md5,
-    link: comment.link,
-    content: comment.content,
-    isAdmin: comment.is_admin,
-    isHidden: comment.is_hidden,
-    reply: comment.reply,
-  }));
-
   return (
     <div className="min-h-[calc(100vh-10rem)] animate-fade space-y-6 py-6">
       <p className="text-justify text-sm/8 sm:text-base/8">
@@ -111,7 +104,7 @@ export default async function Page() {
       <p className="text-justify text-sm/8 sm:text-base/8">
         以上就是我的三个身份，不幸的是，程序员👨‍💻身份杀死了另外两个，生活就像一只无形的手，操控着整个棋局，希望有朝一日，我还能成为曾经那个喜欢二次元、热爱街健的少年。
       </p>
-      <Comments data={data} />
+      <Comments />
     </div>
   );
 }

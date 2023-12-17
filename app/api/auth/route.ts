@@ -1,17 +1,19 @@
-import { getAuthKey } from "@/lib/backend";
+import { generateAuthKey, serverError } from "@/lib/backend";
 import { NextResponse } from "next/server";
 
 export const revalidate = 0;
 
 export async function GET() {
-  const signature = await getAuthKey();
+  try {
+    const authKey = await generateAuthKey();
 
-  return new NextResponse(
-    JSON.stringify({
+    return NextResponse.json({
       message: "get auth key success",
-      data: signature,
+      data: authKey,
       isError: false,
-    }),
-    { status: 200 },
-  );
+    });
+  } catch (e) {
+    console.log(e);
+    return serverError();
+  }
 }

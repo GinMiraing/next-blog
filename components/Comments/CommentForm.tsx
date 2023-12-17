@@ -12,7 +12,9 @@ import {
 
 import { CommentValue } from ".";
 
-const CommentForm: React.FC = () => {
+const CommentForm: React.FC<{
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setRefresh }) => {
   const pathname = usePathname();
   const route = useRouter();
 
@@ -41,26 +43,20 @@ const CommentForm: React.FC = () => {
         throw new Error("auth key not found");
       }
 
-      if (data.replyNick) {
-        await axios.post("/api/replies", data, {
-          headers: {
-            "Api-Key": authKey.data.data,
-          },
-        });
-      } else {
-        await axios.post(
-          "/api/comments",
-          {
-            ...data,
-            path: pathname,
-          },
-          {
-            headers: {
-              "Api-Key": authKey.data.data,
-            },
-          },
-        );
-      }
+      const isReply = data.replyNick ? true : false;
+
+      await axios.post("/api/comments", {
+        isReply,
+        nick: data.nick,
+        email: data.email,
+        content: data.content,
+        path: isReply ? undefined : pathname,
+        link: data.link,
+        parentId: isReply ? data.parentId : undefined,
+        replyId: isReply ? data.replyId : undefined,
+        replyNick: isReply ? data.replyNick : undefined,
+        authKey: authKey.data.data,
+      });
 
       route.refresh();
       reset({
@@ -70,6 +66,7 @@ const CommentForm: React.FC = () => {
         replyId: 0,
         parentId: 0,
       });
+      setRefresh((prev) => !prev);
     } catch (e) {
       console.log(e);
     } finally {
@@ -91,7 +88,7 @@ const CommentForm: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit, OnError)}>
         <div className="w-full">
           <textarea
-            placeholder="请填写评论内容"
+            placeholder="请填写评论内容，如需回复请点击相应评论的头像"
             id="content"
             onInput={(e) => textareaInputHandler(e)}
             className="mt-4 h-24 w-full resize-none overflow-hidden whitespace-pre-wrap rounded-md border border-neutral-200 bg-gray-50 p-2 text-sm/6 outline-none placeholder:text-xs/6 focus:border-rose-300 sm:text-base sm:placeholder:text-sm/6"

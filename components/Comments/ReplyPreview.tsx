@@ -9,14 +9,11 @@ import { cn } from "@/lib/utils";
 import { CommentValue } from ".";
 
 const ReplyPreview: React.FC = () => {
-  const { watch, setValue } = useFormContext<CommentValue>();
+  const { watch, reset } = useFormContext<CommentValue>();
   const pathname = usePathname();
 
   const cancelReply = useCallback(() => {
-    setValue("replyId", 0);
-    setValue("replyNick", "");
-    setValue("replyContent", "");
-    setValue("parentId", 0);
+    reset();
   }, []);
 
   return (

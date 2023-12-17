@@ -33,7 +33,7 @@ const CategoryChoose: React.FC<{
       </h1>
       <div
         ref={dropDownRef}
-        className="relative z-50 flex h-10 w-28 flex-col"
+        className="relative z-10 flex h-10 w-28 flex-col"
       >
         <button
           className="flex h-full w-full shrink-0 items-center justify-center rounded-md border font-medium text-sm transition-colors hover:bg-gray-100 hover:text-pink"

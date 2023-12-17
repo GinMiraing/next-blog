@@ -1,9 +1,8 @@
 import "server-only";
 import axios from "axios";
-import { CommentSchema, ReplySchema } from "./types";
 import { NextResponse } from "next/server";
-
-export const revalidate = 0;
+import { SHA256 } from "crypto-js";
+import RedisClient from "./redis/connect";
 
 const axiosInstance = axios.create({
   baseURL: process.env.BACKEND_HOST,
@@ -53,74 +52,89 @@ export const forbidden = () => {
   );
 };
 
-export const getAuthKey = async () => {
-  const res = await axiosInstance.get<{ signature: string }>("/auth");
+export const generateAuthKey = async () => {
+  const timestamp = Date.now().toString();
+  const nonce = Math.floor(Math.random() * 100000).toString();
 
-  return res.data.signature;
+  const signature = SHA256(timestamp + nonce).toString();
+
+  await RedisClient.set(signature, "1", "EX", 20, "NX");
+
+  return signature;
+};
+
+export const checkAuthKey = async (authKey: string) => {
+  const result = await RedisClient.get(authKey);
+
+  return result ? true : false;
+};
+
+export const deleteAuthKey = async (authKey: string) => {
+  await RedisClient.del(authKey);
 };
 
 export const getCommentsByPath = async (path: string) => {
-  const res = await axiosInstance.get<CommentSchema[]>("/comments", {
+  const res = await axiosInstance.get<{
+    message: string;
+    data: {
+      id: number;
+      nick: string;
+      content: string;
+      link: string;
+      email_md5: string;
+      is_admin: boolean;
+      timestamp: string;
+      reply_count: number;
+      reply_list: {
+        id: number;
+        nick: string;
+        content: string;
+        link: string;
+        email_md5: string;
+        is_admin: boolean;
+        timestamp: string;
+        reply_id: number;
+        reply_nick: string;
+      }[];
+    }[];
+  }>("/comments", {
     params: {
       path,
     },
   });
 
-  return res.data;
+  return res.data.data;
 };
 
-export const getRepliesByParentId = async (parentId: number) => {
-  const res = await axiosInstance.get<ReplySchema[]>("/replies", {
-    params: {
-      parent_id: parentId,
-    },
-  });
+export const getCommentsByParentId = async (parentId: number) => {
+  const res = await axiosInstance.get<{
+    message: string;
+    data: {
+      id: number;
+      nick: string;
+      email_md5: string;
+      link: string;
+      content: string;
+      is_admin: boolean;
+      timestamp: string;
+      reply_id: number;
+      reply_nick: string;
+    }[];
+  }>(`/comments/${parentId}`);
 
-  return res.data;
+  return res.data.data;
 };
 
-export const createComment = async (
-  data: {
-    nick: string;
-    email: string;
-    link: string;
-    content: string;
-    path: string;
-  },
-  authKey: string,
-) => {
-  await axiosInstance.post("/comments", data, {
-    headers: {
-      "Api-Key": authKey,
-    },
-  });
-};
-
-export const createReply = async (
-  data: {
-    nick: string;
-    email: string;
-    link: string;
-    content: string;
-    parentId: number;
-    replyId: number;
-  },
-  authKey: string,
-) => {
-  await axiosInstance.post(
-    "/replies",
-    {
-      nick: data.nick,
-      email: data.email,
-      link: data.link,
-      content: data.content,
-      parent_id: data.parentId,
-      reply_id: data.replyId,
-    },
-    {
-      headers: {
-        "Api-Key": authKey,
-      },
-    },
-  );
+export const createComment = async (data: {
+  is_reply: boolean;
+  nick: string;
+  email: string;
+  content: string;
+  path: string;
+  link?: string;
+  parent_id?: number;
+  reply_id?: number;
+  reply_nick?: string;
+}) => {
+  await axiosInstance.post("/comments", data);
 };
