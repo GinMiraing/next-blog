@@ -1,10 +1,18 @@
+import { Metadata } from "next";
 import Link from "next/link";
+
+import { BasicSettings } from "@/lib/setting";
 
 import CategoryChoose from "@/components/CategoryChoose";
 
 import { allPosts } from "@/.contentlayer/generated";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: `${BasicSettings.name} - 分类`,
+  description: `${BasicSettings.description}`,
+};
 
 export default function Page({
   searchParams,
@@ -14,11 +22,11 @@ export default function Page({
   const category = searchParams.category;
 
   const sortedPosts = allPosts
-    .sort((a, b) => {
-      return a.id < b.id ? 1 : -1;
-    })
     .filter((post) => {
       return category ? post.category === category : true;
+    })
+    .sort((a, b) => {
+      return a.id < b.id ? 1 : -1;
     });
 
   if (sortedPosts.length === 0) {

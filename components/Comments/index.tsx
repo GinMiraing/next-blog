@@ -1,71 +1,53 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import dayjs from "dayjs";
-import { Loader2 } from "lucide-react";
+import axios from "axios";
+import { Loader2, MessageSquareIcon } from "lucide-react";
 import Image from "next/legacy/image";
 import { usePathname } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  createComment,
-  createReply,
-  getAllCommentsByPath,
-  getAuthKey,
-  getRepliesByParentId,
-} from "@/lib/axios";
-import { FormatedComment, FormatedReply } from "@/lib/types";
+import { CommentType } from "@/lib/types";
 import { cn, sleep } from "@/lib/utils";
 
-const commentSchema = z.object({
+import CommentForm from "./CommentForm";
+import CommentItem from "./CommentItem";
+import CommentList from "./CommentList";
+import ReplyPreview from "./ReplyPreview";
+
+const CommentSchema = z.object({
+  content: z.string().min(1, { message: "评论内容不能为空" }).max(200),
   nick: z.string().min(1, { message: "昵称不能为空" }),
   email: z
     .string()
     .min(1, { message: "邮箱不能为空" })
     .email({ message: "邮箱格式不正确" }),
   link: z.union([
-    z.string().url({ message: "链接格式不正确" }).nullable(),
-    z.literal(""),
+    z.string().url({ message: "链接格式不正确" }),
+    z.string().length(0),
   ]),
-  content: z.string().min(1, { message: "评论内容不能为空" }).max(200),
+  parentId: z.number().optional(),
+  replyId: z.number().optional(),
+  replyNick: z.string().optional(),
+  replyContent: z.string().optional(),
 });
 
-type CommentValue = z.infer<typeof commentSchema>;
-
-type CommentFormData = {
-  isReply: boolean;
-  nick?: string;
-  parentId: number;
-  replyId: number;
-  content?: string;
-};
-
-const CommentFormContext = createContext<{
-  data: CommentFormData;
-  setData: React.Dispatch<React.SetStateAction<CommentFormData>>;
-} | null>(null);
-
-const useCommentFormContext = () => {
-  const context = useContext(CommentFormContext);
-
-  if (!context) {
-    throw new Error("CommentFormContext not found");
-  }
-
-  return context;
-};
+export type CommentValue = z.infer<typeof CommentSchema>;
 
 const Comments: React.FC = () => {
-  const [formData, setFormData] = useState<CommentFormData>({
-    isReply: false,
-    nick: "",
-    parentId: 0,
-    replyId: 0,
-    content: "",
+  const form = useForm<CommentValue>({
+    resolver: zodResolver(CommentSchema),
+    defaultValues: {
+      nick: "",
+      email: "",
+      link: "",
+      content: "",
+    },
   });
-  const [reloading, setReloading] = useState(false);
+
+  const [refresh, setRefresh] = useState(false);
 
   return (
     <div className="comments space-y-6">
@@ -76,354 +58,67 @@ const Comments: React.FC = () => {
         </h2>
         <hr className="w-full border-t border-dashed border-slate-300" />
       </div>
-      <CommentFormContext.Provider
-        value={{ data: formData, setData: setFormData }}
-      >
-        <CommentsInputForm setReloading={setReloading} />
-        <ParentCommentsList reloading={reloading} />
-      </CommentFormContext.Provider>
+      <FormProvider {...form}>
+        <ReplyPreview />
+        <CommentForm setRefresh={setRefresh} />
+        <CommentsList refresh={refresh} />
+      </FormProvider>
     </div>
   );
 };
 
-const CommentsInputForm: React.FC<{
-  setReloading: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setReloading }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm<CommentValue>({
-    resolver: zodResolver(commentSchema),
-    defaultValues: {
-      nick: "",
-      email: "",
-      link: "",
-      content: "",
-    },
-  });
+const CommentsList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
   const pathname = usePathname();
-  const { data: replyData, setData } = useCommentFormContext();
+  const { setValue, setFocus } = useFormContext<CommentValue>();
 
-  const [loading, setLoading] = useState(false);
-
-  const onSubmit: SubmitHandler<CommentValue> = async (data) => {
-    window.localStorage.setItem(
-      "comment_metadata",
-      JSON.stringify({
-        nick: data.nick,
-        email: data.email,
-        link: data.link,
-      }),
-    );
-    setLoading(true);
-    const { nick, email, link, content } = data;
-
-    try {
-      const authKey = await getAuthKey();
-
-      if (replyData.isReply) {
-        await createReply({
-          data: {
-            nick,
-            email,
-            link: link ? link : "",
-            content,
-            parentId: replyData.parentId,
-            replyId: replyData.replyId,
-          },
-          authKey,
-        });
-        setData({
-          isReply: false,
-          nick: "",
-          parentId: 0,
-          replyId: 0,
-          content: "",
-        });
-      } else {
-        await createComment({
-          data: {
-            nick,
-            email,
-            link: link ? link : "",
-            content,
-            path: pathname,
-          },
-          authKey,
-        });
-      }
-      reset({
-        content: "",
-      });
-      setReloading((prev) => !prev);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const textareaInputHandler = (e: React.FormEvent<HTMLTextAreaElement>) => {
-    e.currentTarget.style.height = "0px";
-    e.currentTarget.style.height = `${e.currentTarget.scrollHeight + 56}px`;
-  };
-
-  useEffect(() => {
-    const commentMetadata = window.localStorage.getItem("comment_metadata");
-
-    try {
-      if (commentMetadata) {
-        const { nick, email, link } = JSON.parse(commentMetadata);
-        setValue("nick", nick);
-        setValue("email", email);
-        setValue("link", link);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
-
-  return (
-    <div className="flex flex-col">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="w-full">
-          {replyData.isReply && (
-            <>
-              <div className="text-sm sm:text-base">
-                你正在回复：{" "}
-                <a
-                  className="transition-colors hover:text-pink"
-                  href={`${pathname}#${replyData.replyId}`}
-                >
-                  {replyData.nick}
-                </a>
-              </div>
-              <div className="comments-content mt-4 w-full rounded-md bg-red-50 px-2 py-4 sm:px-4">
-                <p className="whitespace-pre-wrap text-justify text-sm/6 sm:text-base/7">
-                  {replyData.content}
-                </p>
-              </div>
-            </>
-          )}
-          <textarea
-            placeholder="请填写评论内容"
-            id="content"
-            onInput={(e) => textareaInputHandler(e)}
-            className="mt-4 h-24 w-full resize-none overflow-hidden whitespace-pre-wrap rounded-md border border-neutral-200 bg-gray-50 p-2 text-sm/6 outline-none placeholder:text-xs/6 focus:border-rose-300 sm:text-base sm:placeholder:text-sm/6"
-            {...register("content")}
-          ></textarea>
-        </div>
-        <div className="mt-4 flex w-full">
-          <div className="grid w-full grid-cols-1 gap-4">
-            <div className="flex h-12 items-center overflow-hidden rounded-sm">
-              <div className="flex h-full w-20 shrink-0 items-center justify-center rounded-l-md border border-r-0 px-4 text-sm">
-                <label>
-                  昵称<span className="text-red-500">*</span>
-                </label>
-              </div>
-              <input
-                className="h-full w-10 grow rounded-r-md border bg-gray-50 px-2 py-1 text-sm outline-none focus:border-rose-300 sm:text-base"
-                type="text"
-                {...register("nick")}
-              />
-            </div>
-            <div className="flex h-12 items-center overflow-hidden rounded-sm">
-              <div className="flex h-full w-20 shrink-0 items-center justify-center rounded-l-md border border-r-0 px-4 text-sm">
-                <label>
-                  邮箱<span className="text-red-500">*</span>
-                </label>
-              </div>
-              <input
-                className="h-full w-10 grow rounded-r-md border bg-gray-50 px-2 py-1 text-sm outline-none focus:border-rose-300 sm:text-base sm:placeholder:text-sm"
-                placeholder="用于邮件通知"
-                type="text"
-                {...register("email")}
-              />
-            </div>
-            <div className="flex h-12 items-center overflow-hidden rounded-sm">
-              <div className="flex h-full w-20 shrink-0 items-center justify-center rounded-l-md border border-r-0 px-4 text-sm">
-                <label>网站</label>
-              </div>
-              <input
-                className="h-full w-10 grow rounded-r-md border bg-slate-50 px-2 py-1 text-sm outline-none focus:border-red-500 sm:text-base sm:placeholder:text-sm"
-                type="text"
-                {...register("link")}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 flex items-center justify-between">
-          <div className="text-sm text-red-500">
-            {errors.content
-              ? errors.content.message
-              : errors.nick
-              ? errors.nick.message
-              : errors.email
-              ? errors.email.message
-              : errors.link
-              ? errors.link.message
-              : ""}
-          </div>
-          <button
-            disabled={loading}
-            className="rounded bg-pink px-4 py-2 text-white transition-opacity hover:opacity-70"
-            type="submit"
-          >
-            {loading ? <Loader2 className="animate-spin" /> : "提交"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-};
-
-const ParentCommentsList: React.FC<{ reloading: boolean }> = ({
-  reloading,
-}) => {
   const [loading, setLoading] = useState<"wait" | "loading" | "success">(
     "wait",
   );
-  const [commentList, setCommentList] = useState<FormatedComment[]>([]);
-  const pathname = usePathname();
+  const [comments, setComments] = useState<CommentType[]>([]);
 
-  const fetchMainComments = async () => {
+  const fetchComments = async () => {
     try {
       setLoading("loading");
-      await sleep(1000);
-      setCommentList(
-        await getAllCommentsByPath({
+      const res = await axios.get<{
+        message: string;
+        data: CommentType[];
+        isError: boolean;
+      }>(`/api/comments`, {
+        params: {
           path: pathname,
-        }),
-      );
-    } catch (error) {
-      console.log(error);
+        },
+      });
+
+      setComments(res.data.data);
+    } catch (e) {
+      console.log(e);
     } finally {
       setLoading("success");
     }
   };
-
-  useEffect(() => {
-    fetchMainComments();
-  }, [reloading]);
-
-  if (loading === "loading") {
-    return (
-      <div className="flex h-40 w-full items-center justify-center">
-        <Loader2 className="mr-2 animate-spin text-pink" />
-        评论正在加载中...
-      </div>
-    );
-  }
-
-  if (commentList.length === 0 && loading === "success") {
-    return (
-      <div className="flex h-40 w-full items-center justify-center">
-        暂无评论
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-8">
-      {commentList.map((comment) => (
-        <ParentCommentsItem
-          comment={comment}
-          key={comment.id}
-        />
-      ))}
-    </div>
-  );
-};
-
-const ParentCommentsItem: React.FC<{ comment: FormatedComment }> = ({
-  comment,
-}) => {
-  const { setData } = useCommentFormContext();
-  const [show, setShow] = useState<"show" | "hide" | "init">("init");
 
   const replyBtnHandler = ({
-    comment,
+    replyId,
+    replyNick,
+    replyContent,
     parentId,
   }: {
-    comment: FormatedComment;
+    replyId: number;
+    replyNick: string;
+    replyContent: string;
     parentId: number;
   }) => {
-    setData({
-      isReply: true,
-      nick: comment.nick,
-      parentId,
-      replyId: comment.id,
-      content: comment.content,
-    });
-    const contentDOM = document.getElementById("content");
-    if (contentDOM) {
-      contentDOM.focus();
-    }
-  };
+    setValue("replyId", replyId);
+    setValue("replyNick", replyNick);
+    setValue("replyContent", replyContent);
+    setValue("parentId", parentId);
 
-  return (
-    <div>
-      <BaseCommentItem comment={comment}>
-        <div className="flex justify-between text-sm sm:text-base">
-          <button
-            onClick={() =>
-              setShow(
-                show === "init" ? "show" : show === "show" ? "hide" : "show",
-              )
-            }
-            className={cn("transition-colors hover:text-pink", {
-              invisible: comment.reply === 0,
-            })}
-          >
-            {show === "init" || show === "hide"
-              ? `展开回复（${comment.reply}）`
-              : "收起回复"}
-          </button>
-          <button
-            onClick={() => replyBtnHandler({ comment, parentId: comment.id })}
-            className="transition-colors hover:text-pink"
-          >
-            回复
-          </button>
-        </div>
-      </BaseCommentItem>
-      {show !== "init" && (
-        <div
-          className={cn("ml-14 mt-6 space-y-4", {
-            hidden: show === "hide",
-          })}
-        >
-          <ReplyCommentsList parentId={comment.id} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
-  const [loading, setLoading] = useState<"wait" | "loading" | "success">(
-    "wait",
-  );
-  const [replyList, setReplyList] = useState<FormatedReply[]>([]);
-
-  const fetchReplyComments = async () => {
-    try {
-      setLoading("loading");
-      await sleep(1000);
-      setReplyList(await getRepliesByParentId({ parentId }));
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading("success");
-    }
+    setFocus("content");
   };
 
   useEffect(() => {
-    fetchReplyComments();
-  }, []);
+    fetchComments();
+  }, [refresh]);
 
   if (loading === "wait" || loading === "loading") {
     return (
@@ -434,7 +129,7 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
     );
   }
 
-  if (replyList.length === 0 && loading === "success") {
+  if (loading === "success" && comments.length === 0) {
     return (
       <div className="flex h-40 w-full items-center justify-center">
         暂无评论
@@ -443,131 +138,69 @@ const ReplyCommentsList: React.FC<{ parentId: number }> = ({ parentId }) => {
   }
 
   return (
-    <div className="space-y-4">
-      {replyList.map((reply) => (
-        <ReplyCommentsItem
-          parentId={parentId}
-          comment={reply}
-          key={reply.id}
-        />
-      ))}
-    </div>
-  );
-};
-
-const ReplyCommentsItem: React.FC<{
-  comment: FormatedReply;
-  parentId: number;
-}> = ({ comment, parentId }) => {
-  const { setData } = useCommentFormContext();
-
-  const replyBtnHandler = ({
-    comment,
-    parentId,
-  }: {
-    comment: FormatedReply;
-    parentId: number;
-  }) => {
-    setData({
-      isReply: true,
-      nick: comment.nick,
-      parentId,
-      replyId: comment.id,
-      content: comment.content,
-    });
-    const contentDOM = document.getElementById("content");
-    if (contentDOM) {
-      contentDOM.focus();
-    }
-  };
-
-  return (
-    <div>
-      <BaseCommentItem comment={comment}>
-        <div className="flex justify-end text-sm sm:text-base">
-          <button
-            onClick={() => replyBtnHandler({ comment, parentId })}
-            className="transition-colors hover:text-pink"
+    <CommentList divider>
+      {comments.map((comment) => (
+        <div
+          key={comment.id}
+          className="py-4"
+        >
+          <CommentItem
+            pathname={pathname}
+            item={comment}
           >
-            回复
-          </button>
-        </div>
-      </BaseCommentItem>
-    </div>
-  );
-};
-
-const BaseCommentItem: React.FC<{
-  children: React.ReactNode;
-  comment: {
-    id: number;
-    nick: string;
-    emailMd5: string;
-    link: string;
-    content: string;
-    isAdmin: boolean;
-    isHidden: boolean;
-    reply?: number;
-    replyId?: number;
-    replyNick?: string;
-  };
-}> = ({ children, comment }) => {
-  const pathname = usePathname();
-
-  return (
-    <div
-      className="-mt-20 w-full pt-20"
-      id={comment.id.toString()}
-    >
-      <div className="flex w-full">
-        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md">
-          <Image
-            src={`https://cravatar.cn/avatar/${comment.emailMd5}`}
-            alt={comment.emailMd5}
-            className="h-full w-full object-cover object-center"
-            layout="fill"
-            referrerPolicy="no-referrer"
-          />
-        </div>
-        <div className="ml-4 flex w-full flex-col space-y-3 overflow-hidden">
-          <div className="no-scrollbar flex items-center space-x-2 overflow-scroll sm:space-x-3">
-            {comment.link ? (
-              <a
-                className="whitespace-nowrap text-lg transition-colors hover:text-pink"
-                href={comment.link}
-                target="_blank"
-              >
-                {comment.nick}
-              </a>
-            ) : (
-              <div className="whitespace-nowrap text-lg">{comment.nick}</div>
-            )}
-            <div className="whitespace-nowrap text-xs">
-              <div>{dayjs(comment.id).format("YYYY-MM-DD HH:mm:ss")}</div>
+            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md hover:cursor-pointer">
+              <Image
+                src={`https://cravatar.cn/avatar/${comment.emailMd5}`}
+                alt={comment.emailMd5}
+                className="h-full w-full object-cover object-center"
+                layout="fill"
+                referrerPolicy="no-referrer"
+                onClick={() =>
+                  replyBtnHandler({
+                    replyId: comment.id,
+                    replyNick: comment.nick,
+                    replyContent: comment.content,
+                    parentId: comment.id,
+                  })
+                }
+              />
             </div>
-            {comment.isAdmin && (
-              <div className="whitespace-nowrap rounded-md bg-blue-100 px-1.5 text-sm">
-                博主
-              </div>
-            )}
-          </div>
-          <div className="comments-content w-full rounded-md bg-red-50 px-2 py-4 sm:px-4">
-            <p className="whitespace-pre-wrap text-justify text-sm/6 sm:text-base/7">
-              {comment.replyNick && (
-                <a
-                  className="mr-2 bg-yellow-200 transition-colors hover:text-pink"
-                  href={`${pathname}#${comment.replyId}`}
-                >
-                  @{comment.replyNick}
-                </a>
-              )}
-              {comment.content}
-            </p>
-          </div>
-          {children}
+          </CommentItem>
+          {comment.replyList.length > 0 && (
+            <div className="ml-14 mt-6">
+              <CommentList>
+                {comment.replyList.map((reply) => (
+                  <div key={reply.id}>
+                    <CommentItem
+                      pathname={pathname}
+                      item={reply}
+                    >
+                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md hover:cursor-pointer">
+                        <Image
+                          src={`https://cravatar.cn/avatar/${reply.emailMd5}`}
+                          alt={reply.emailMd5}
+                          className="h-full w-full object-cover object-center"
+                          layout="fill"
+                          referrerPolicy="no-referrer"
+                          onClick={() =>
+                            replyBtnHandler({
+                              replyId: reply.id,
+                              replyNick: reply.nick,
+                              replyContent: reply.content,
+                              parentId: comment.id,
+                            })
+                          }
+                        />
+                      </div>
+                    </CommentItem>
+                  </div>
+                ))}
+              </CommentList>
+            </div>
+          )}
         </div>
-      </div>
-    </div>
+      ))}
+    </CommentList>
   );
 };
 

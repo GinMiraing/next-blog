@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description: `${BasicSettings.description}`,
 };
 
-export default function Page() {
+export default async function Page() {
   return (
     <div className="min-h-[calc(100vh-10rem)] animate-fade space-y-6 py-6">
       <FriendsLink />

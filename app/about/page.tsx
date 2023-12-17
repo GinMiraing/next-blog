@@ -1,13 +1,23 @@
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import { Metadata } from "next";
+import dynamic from "next/dynamic";
 import Image from "next/legacy/image";
 import Link from "next/link";
 
-import { AboutAnimates, AboutTools } from "@/lib/setting";
+import { AboutAnimates, AboutTools, BasicSettings } from "@/lib/setting";
 
 import AboutGallary from "@/components/AboutGallary";
-import Comments from "@/components/Comments";
 
-export default function Page() {
+const Comments = dynamic(() => import("@/components/Comments"));
+
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: `${BasicSettings.name} - 关于`,
+  description: `${BasicSettings.description}`,
+};
+
+export default async function Page() {
   return (
     <div className="min-h-[calc(100vh-10rem)] animate-fade space-y-6 py-6">
       <p className="text-justify text-sm/8 sm:text-base/8">
