@@ -1,3 +1,4 @@
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import axios from "axios";
 import { Loader2, Tag } from "lucide-react";
 import { serialize } from "next-mdx-remote/serialize";

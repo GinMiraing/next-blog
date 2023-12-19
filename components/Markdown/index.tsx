@@ -1,7 +1,6 @@
 "use client";
 
 import { Fancybox } from "@fancyapps/ui";
-import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { useWindowScroll } from "@uidotdev/usehooks";
 import { ChevronUp } from "lucide-react";
 import type { MDXComponents } from "mdx/types";
