@@ -17,6 +17,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: true,
+    serverComponentsExternalPackages: ["shiki"],
   },
 };
 
