@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+  output: "standalone",
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -16,7 +17,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: true,
-    serverComponentsExternalPackages: ["shiki"],
+    serverComponentsExternalPackages: ["rehype-shiki", "next-mdx-remote"],
   },
 };
 
