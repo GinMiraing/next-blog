@@ -81,7 +81,7 @@ const StreamPage: React.FC<{
         {post && <Markdown source={mdxSource} />}
         <div className="flex items-center space-x-2">
           <Tag className="h-4 w-4" />
-          <span>{post.category}</span>
+          <span className="text-sm">{post.category}</span>
         </div>
         <Comments />
       </div>
