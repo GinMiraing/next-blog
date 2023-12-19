@@ -5,14 +5,12 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { useWindowScroll } from "@uidotdev/usehooks";
 import { ChevronUp } from "lucide-react";
 import type { MDXComponents } from "mdx/types";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { useEffect } from "react";
 
 import { cn } from "@/lib/utils";
-
-import { Post } from "@/.contentlayer/generated";
 
 const mdxComponents: MDXComponents = {
   a: ({ href, children }) => (
@@ -60,9 +58,9 @@ const mdxComponents: MDXComponents = {
   ),
 };
 
-const Markdown: React.FC<{ post: Post }> = ({ post }) => {
-  const MDXContent = useMDXComponent(post.body.code);
-
+const Markdown: React.FC<{ source: MDXRemoteSerializeResult }> = ({
+  source,
+}) => {
   const [{ x, y }, scrollTo] = useWindowScroll();
 
   useEffect(() => {
@@ -86,12 +84,20 @@ const Markdown: React.FC<{ post: Post }> = ({ post }) => {
         },
       },
     });
+
+    return () => {
+      Fancybox.unbind("[data-fancybox]");
+      Fancybox.close();
+    };
   }, []);
 
   return (
     <>
       <div className="markdown">
-        <MDXContent components={mdxComponents} />
+        <MDXRemote
+          {...source}
+          components={mdxComponents}
+        />
       </div>
       <button
         title="返回顶部"

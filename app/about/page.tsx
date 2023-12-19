@@ -1,4 +1,3 @@
-import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/legacy/image";

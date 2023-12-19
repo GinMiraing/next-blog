@@ -1,31 +1,39 @@
 import { ChevronRight, Tag } from "lucide-react";
 import Link from "next/link";
 
-import { Post } from "@/.contentlayer/generated";
+const Postcard: React.FC<{
+  post: {
+    id: number;
+    title: string;
+    description: string;
+    date: string;
+    category: string;
+  };
+}> = ({ post }) => {
+  const { id, title, description, date, category } = post;
 
-const Postcard: React.FC<{ post: Post }> = ({ post }) => {
   return (
     <div className="flex w-full flex-col space-y-4 py-4">
       <Link
-        href={post.url}
+        href={`/posts/${id}`}
         className="line-clamp-1 text-center font-medium text-xl transition-colors hover:text-pink"
       >
-        {post.title}
+        {title}
       </Link>
-      <data className="text-center text-sm">{post.date}</data>
+      <data className="text-center text-sm">{date}</data>
       <Link
-        href={post.url}
+        href={`/posts/${id}`}
         className="line-clamp-2 text-justify text-sm/8 transition-colors hover:text-pink sm:text-base/8"
       >
-        {post.description}
+        {description}
       </Link>
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center space-x-2">
           <Tag className="h-4 w-4" />
-          <span>{post.category}</span>
+          <span>{category}</span>
         </div>
         <Link
-          href={post.url}
+          href={`/posts/${id}`}
           className="flex items-center space-x-1 text-sm transition-colors hover:text-pink"
         >
           <span>阅读更多</span>

@@ -1,34 +1,64 @@
+import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
+
+import { getPosts } from "@/lib/backend";
+
 import Pagination from "@/components/Pagination";
 import Postcard from "@/components/Postcard";
 
-import { allPosts } from "@/.contentlayer/generated";
+export const revalidate = 60 * 30;
 
-export const revalidate = 60;
-
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: { page?: string; limit?: string };
 }) {
   const page = searchParams.page || "1";
+  const limit = searchParams.limit || "7";
 
-  if (isNaN(parseInt(page))) {
+  if (isNaN(parseInt(page)) || isNaN(parseInt(limit))) {
     throw new Error("查询参数错误");
   }
 
-  const intPage = parseInt(page);
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
+          <Loader2 className="mr-2 animate-spin text-pink" />
+          加载中...
+        </div>
+      }
+    >
+      <StreamPage
+        page={page}
+        limit={limit}
+      />
+    </Suspense>
+  );
+}
 
-  const sortedPosts = allPosts.sort((a, b) => {
-    return a.id < b.id ? 1 : -1;
+const StreamPage: React.FC<{
+  page: string;
+  limit: string;
+}> = async ({ page, limit }) => {
+  const data = await getPosts({
+    limit: parseInt(limit),
+    page: parseInt(page),
   });
 
-  if (sortedPosts.length === 0) {
+  const totalPage = Math.ceil(data.total / parseInt(limit));
+
+  const posts = data.posts.map((post) => ({
+    id: post.id,
+    title: post.title,
+    description: post.description,
+    date: post.create_at,
+    category: post.category,
+  }));
+
+  if (posts.length === 0) {
     throw new Error("未找到任何文章");
   }
-
-  const list = sortedPosts.slice(intPage * 7 - 7, intPage * 7);
-
-  const totalPage = Math.ceil(sortedPosts.length / 7);
 
   return (
     <div
@@ -36,17 +66,17 @@ export default function Page({
       className="min-h-[calc(100vh-10rem)] animate-fade py-6"
     >
       <div className="divide-y divide-dashed divide-slate-300">
-        {list.map((post) => (
+        {posts.map((post) => (
           <Postcard
-            key={post._raw.flattenedPath}
+            key={post.id}
             post={post}
           />
         ))}
       </div>
       <Pagination
-        currentPage={intPage}
+        currentPage={parseInt(page)}
         totalPage={totalPage}
       />
     </div>
   );
-}
+};
