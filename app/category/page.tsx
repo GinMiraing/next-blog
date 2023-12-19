@@ -1,5 +1,7 @@
+import { Loader2 } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { getPosts } from "@/lib/backend";
 import { BasicSettings } from "@/lib/setting";
@@ -20,6 +22,23 @@ export default async function Page({
 }) {
   const category = searchParams.category;
 
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
+          <Loader2 className="mr-2 animate-spin text-pink" />
+          加载中...
+        </div>
+      }
+    >
+      <StreamPage category={category} />
+    </Suspense>
+  );
+}
+
+const StreamPage: React.FC<{
+  category?: string;
+}> = async ({ category }) => {
   const data = await getPosts({
     limit: 100,
     page: 1,
@@ -31,6 +50,10 @@ export default async function Page({
     title: post.title,
     date: post.create_at,
   }));
+
+  if (posts.length === 0) {
+    throw new Error("未找到任何文章");
+  }
 
   if (posts.length === 0) {
     throw new Error("未找到任何文章");
@@ -61,4 +84,4 @@ export default async function Page({
       <div className="text-center">下面没有内容啦！！！</div>
     </div>
   );
-}
+};

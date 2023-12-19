@@ -1,3 +1,6 @@
+import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
+
 import { getPosts } from "@/lib/backend";
 
 import Pagination from "@/components/Pagination";
@@ -17,6 +20,27 @@ export default async function Page({
     throw new Error("查询参数错误");
   }
 
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
+          <Loader2 className="mr-2 animate-spin text-pink" />
+          加载中...
+        </div>
+      }
+    >
+      <StreamPage
+        page={page}
+        limit={limit}
+      />
+    </Suspense>
+  );
+}
+
+const StreamPage: React.FC<{
+  page: string;
+  limit: string;
+}> = async ({ page, limit }) => {
   const data = await getPosts({
     limit: parseInt(limit),
     page: parseInt(page),
@@ -55,4 +79,4 @@ export default async function Page({
       />
     </div>
   );
-}
+};
