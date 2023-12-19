@@ -38,8 +38,7 @@ export const FriendsLinkItems = [
     link: "https://irithys.com",
     name: "山茶花舍",
     description: "吕楪在记录自己的生活",
-    avatar:
-      "https://irithys.com/img/avatar_hubbf77efc6dc5667fd8ba4d90170d6399_48198_300x0_resize_q75_h2_box_2.webp",
+    avatar: "https://cravatar.cn/avatar/a1325a1c3a07e4e611ae91b8b389be2b",
   },
   {
     link: "https://pinlyu.com",
