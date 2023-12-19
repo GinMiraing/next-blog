@@ -138,3 +138,30 @@ export const createComment = async (data: {
 }) => {
   await axiosInstance.post("/comments", data);
 };
+
+export const getPosts = async (params: {
+  limit?: number;
+  page?: number;
+  category?: string;
+}) => {
+  const res = await axiosInstance.get<{
+    message: string;
+    data: {
+      posts: {
+        id: number;
+        title: string;
+        description: string;
+        create_at: string;
+        update_at: string;
+        category: string;
+      }[];
+      total: number;
+    };
+  }>("/posts", {
+    params: {
+      ...params,
+    },
+  });
+
+  return res.data.data;
+};
