@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   title: `${BasicSettings.name}`,
   description: `${BasicSettings.description}`,
   icons: "/favicon.ico",
-  referrer: "same-origin",
 };
 
 export default function RootLayout({
