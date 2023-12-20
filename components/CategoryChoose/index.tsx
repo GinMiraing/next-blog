@@ -57,7 +57,7 @@ const CategoryChoose: React.FC<{
                   : `/category?category=${item.name}`
               }
               key={item.key}
-              className="flex cursor-pointer items-center justify-center bg-white p-2 text-sm transition-colors hover:bg-gray-100 hover:text-pink"
+              className="flex cursor-pointer items-center justify-center rounded-md bg-white p-2 text-sm transition-colors hover:bg-gray-100 hover:text-pink"
             >
               {item.name}
             </Link>

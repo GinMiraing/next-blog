@@ -18,7 +18,6 @@ const FriendsLink: React.FC = () => {
               src={item.avatar}
               alt={item.name}
               layout="fill"
-              referrerPolicy="no-referrer"
               className="object-cover object-center"
             />
           </div>

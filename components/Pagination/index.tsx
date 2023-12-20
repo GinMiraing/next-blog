@@ -1,6 +1,4 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
@@ -8,21 +6,23 @@ const Pagination: React.FC<{
   currentPage: number;
   totalPage: number;
 }> = ({ currentPage, totalPage }) => {
-  const router = useRouter();
-
   const pages = [currentPage - 1, currentPage, currentPage + 1].filter(
     (item) => item > 1 && item < totalPage,
   );
 
   return (
     <div className="flex items-center justify-center space-x-2">
-      <button
-        onClick={() => router.push("/")}
-        disabled={currentPage === 1}
-        className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100 disabled:bg-pink disabled:text-white"
+      <Link
+        href={"/"}
+        className={cn(
+          "flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100",
+          {
+            "pointer-events-none bg-pink text-white": currentPage === 1,
+          },
+        )}
       >
         1
-      </button>
+      </Link>
       <div
         className={cn("flex h-9 w-9 items-center justify-center", {
           hidden: currentPage < 4,
@@ -31,19 +31,18 @@ const Pagination: React.FC<{
         ...
       </div>
       {pages.map((page) => (
-        <button
+        <Link
           key={page}
-          onClick={() =>
-            router.push(
-              `/?page=${page}
-                `,
-            )
-          }
-          disabled={page === currentPage}
-          className="flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100 disabled:bg-pink disabled:text-white"
+          href={`?page=${page}`}
+          className={cn(
+            "flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100",
+            {
+              "pointer-events-none bg-pink text-white": page === currentPage,
+            },
+          )}
         >
           {page}
-        </button>
+        </Link>
       ))}
       <div
         className={cn("flex h-9 w-9 items-center justify-center", {
@@ -52,18 +51,18 @@ const Pagination: React.FC<{
       >
         ...
       </div>
-      <button
-        onClick={() => router.push(`/?page=${totalPage}`)}
-        disabled={currentPage === totalPage}
+      <Link
+        href={`?page=${totalPage}`}
         className={cn(
-          "flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100 disabled:bg-pink disabled:text-white",
+          "flex h-9 w-9 items-center justify-center rounded transition-colors hover:bg-gray-100",
           {
             hidden: totalPage === 1,
+            "pointer-events-none bg-pink text-white": currentPage === totalPage,
           },
         )}
       >
         {totalPage}
-      </button>
+      </Link>
     </div>
   );
 };

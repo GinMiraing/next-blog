@@ -9,15 +9,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn.zengjunyin.com",
       },
-      {
-        protocol: "https",
-        hostname: "article.biliimg.com",
-      },
     ],
   },
   experimental: {
     serverActions: true,
-    serverComponentsExternalPackages: ["rehype-shiki", "next-mdx-remote"],
   },
 };
 
