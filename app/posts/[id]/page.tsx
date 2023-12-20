@@ -62,6 +62,7 @@ const StreamPage: React.FC<{
   const mdres = await axios.get(`${post.sourceUrl}.mdx`, {
     headers: {
       "Content-Type": "text/markdown",
+      referer: "https://blog.zengjunyin.com/",
     },
   });
 
