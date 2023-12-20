@@ -33,7 +33,6 @@ const Header: React.FC = () => {
                 alt="avatar"
                 className="object-cover object-center"
                 layout="fill"
-                referrerPolicy="no-referrer"
               />
             </Link>
             <Link

@@ -2,21 +2,21 @@ export const BasicSettings = {
   name: "胤的博客",
   description: "所念皆星河",
   avatar:
-    "https://article.biliimg.com/bfs/article/d29fe12c860c2b7a54db6483132fb0cf24d6aeb0.png@.webp",
+    "https://cdn.zengjunyin.com/images/d29fe12c860c2b7a54db6483132fb0cf24d6aeb0.png",
 };
 
 export const NavbarItems = [
   {
     name: "分类",
-    link: "/category/",
+    link: "/category",
   },
   {
     name: "友链",
-    link: "/link/",
+    link: "/link",
   },
   {
     name: "关于",
-    link: "/about/",
+    link: "/about",
   },
 ];
 
@@ -25,8 +25,7 @@ export const FriendsLinkItems = [
     link: "https://blog.scxho.cn",
     name: "山川行貉",
     description: "快让我在雪地上撒点儿野.",
-    avatar:
-      "https://article.biliimg.com/bfs/article/f029053d1b895afb1784b7aef5c745526faa696e.png@.webp",
+    avatar: "https://cravatar.cn/avatar/24e54d6a6ac9c59d9d5ee44c825b8c0a",
   },
   {
     link: "https://vian.top",
@@ -58,25 +57,6 @@ export const FriendsLinkItems = [
     name: "林木云",
     description: "一个记录个人经验的网站",
     avatar: "https://img.15xd.cn/favicon.png",
-  },
-];
-
-export const FooterItems = [
-  {
-    name: "cc-logo",
-    src: "/icons/cc-logo.svg",
-  },
-  {
-    name: "cc-by",
-    src: "/icons/cc-by.svg",
-  },
-  {
-    name: "cc-nc",
-    src: "/icons/cc-nc.svg",
-  },
-  {
-    name: "cc-sa",
-    src: "/icons/cc-sa.svg",
   },
 ];
 

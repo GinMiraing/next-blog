@@ -25,12 +25,10 @@ const mdxComponents: MDXComponents = {
       data-fancybox
       className="relative block h-60 w-full overflow-hidden rounded bg-gray-50 transition-all hover:brightness-75 sm:h-80"
       href={src as string}
-      referrerPolicy="no-referrer"
     >
       <Image
-        referrerPolicy="no-referrer"
         priority
-        src={`${src}@900w_450h_1c.webp` as string}
+        src={`${src}/post_thumb` as string}
         alt={alt || ""}
         layout="fill"
         className="object-cover object-center"

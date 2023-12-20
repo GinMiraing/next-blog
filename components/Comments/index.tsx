@@ -154,7 +154,6 @@ const CommentsList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
                 alt={comment.emailMd5}
                 className="h-full w-full object-cover object-center"
                 layout="fill"
-                referrerPolicy="no-referrer"
                 onClick={() =>
                   replyBtnHandler({
                     replyId: comment.id,
@@ -181,7 +180,6 @@ const CommentsList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
                           alt={reply.emailMd5}
                           className="h-full w-full object-cover object-center"
                           layout="fill"
-                          referrerPolicy="no-referrer"
                           onClick={() =>
                             replyBtnHandler({
                               replyId: reply.id,

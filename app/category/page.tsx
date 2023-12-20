@@ -81,7 +81,7 @@ const StreamPage: React.FC<{
           </div>
         ))}
       </div>
-      <div className="text-center">下面没有内容啦！！！</div>
+      <div className="text-center">下面没有内容啦...</div>
     </div>
   );
 };
