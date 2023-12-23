@@ -1,9 +1,9 @@
 import { Loader2 } from "lucide-react";
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/legacy/image";
 import Link from "next/link";
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 
 import { getFriends } from "@/lib/backend";
 import { BasicSettings } from "@/lib/setting";
@@ -33,9 +33,9 @@ export default async function Page() {
 }
 
 const StreamPage: React.FC = async () => {
-  const friends = await getFriends();
+  const data = await getFriends();
 
-  if (friends.length === 0) {
+  if (data.length === 0) {
     return (
       <div className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center py-6">
         <h1 className="text-2xl">加载失败，请刷新重试</h1>
@@ -46,7 +46,7 @@ const StreamPage: React.FC = async () => {
   return (
     <div className="min-h-[calc(100vh-10rem)] animate-fade space-y-6 py-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {friends.map((item) => (
+        {data.map((item) => (
           <Link
             target="_blank"
             key={item.name}
