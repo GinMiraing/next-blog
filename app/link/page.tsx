@@ -10,7 +10,7 @@ import { BasicSettings } from "@/lib/setting";
 
 const Comments = dynamic(() => import("@/components/Comments"));
 
-export const revalidate = 60;
+export const revalidate = 60 * 30;
 
 export const metadata: Metadata = {
   title: `${BasicSettings.name} - 友情链接`,
@@ -33,7 +33,7 @@ export default async function Page() {
 }
 
 const StreamPage: React.FC = async () => {
-  const friends = (await getFriends()) || [];
+  const friends = await getFriends();
 
   if (friends.length === 0) {
     return (
