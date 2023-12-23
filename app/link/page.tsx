@@ -1,7 +1,9 @@
+import { Loader2 } from "lucide-react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/legacy/image";
 import Link from "next/link";
+import React, { Suspense } from "react";
 
 import { getFriends } from "@/lib/backend";
 import { BasicSettings } from "@/lib/setting";
@@ -16,6 +18,21 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
+          <Loader2 className="mr-2 animate-spin text-pink" />
+          加载中...
+        </div>
+      }
+    >
+      <StreamPage />
+    </Suspense>
+  );
+}
+
+const StreamPage: React.FC = async () => {
   const friends = (await getFriends()) || [];
 
   if (friends.length === 0) {
@@ -54,4 +71,4 @@ export default async function Page() {
       <Comments />
     </div>
   );
-}
+};
