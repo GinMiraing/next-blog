@@ -52,11 +52,11 @@ const StreamPage: React.FC<{
   }));
 
   if (posts.length === 0) {
-    throw new Error("未找到任何文章");
-  }
-
-  if (posts.length === 0) {
-    throw new Error("未找到任何文章");
+    return (
+      <div className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center py-6">
+        <h1 className="text-2xl">加载失败，请刷新重试</h1>
+      </div>
+    );
   }
 
   return (

@@ -1,7 +1,8 @@
 "use client";
 
+import { useClickAway } from "@uidotdev/usehooks";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { Categories } from "@/lib/setting";
 import { cn } from "@/lib/utils";
@@ -10,21 +11,9 @@ const CategoryChoose: React.FC<{
   crurentCategory?: string;
 }> = ({ crurentCategory }) => {
   const [show, setShow] = useState(false);
-  const dropDownRef = useRef<HTMLDivElement>(null);
-
-  const bodyClickHandler = (e: MouseEvent) => {
-    if (!dropDownRef.current?.contains(e.target as Node)) {
-      setShow(false);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("click", bodyClickHandler);
-
-    return () => {
-      window.removeEventListener("click", bodyClickHandler);
-    };
-  }, []);
+  const dropDownRef = useClickAway<HTMLDivElement>(() => {
+    setShow(false);
+  });
 
   return (
     <div className="flex items-center justify-between">
