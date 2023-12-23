@@ -106,25 +106,6 @@ export const getCommentsByPath = async (path: string) => {
   return res.data.data;
 };
 
-export const getCommentsByParentId = async (parentId: number) => {
-  const res = await axiosInstance.get<{
-    message: string;
-    data: {
-      id: number;
-      nick: string;
-      email_md5: string;
-      link: string;
-      content: string;
-      is_admin: boolean;
-      timestamp: string;
-      reply_id: number;
-      reply_nick: string;
-    }[];
-  }>(`/comments/${parentId}`);
-
-  return res.data.data;
-};
-
 export const createComment = async (data: {
   is_reply: boolean;
   nick: string;
@@ -188,4 +169,19 @@ export const getPostById = async (id: number) => {
     category: res.data.data.category,
     likes: res.data.data.likes,
   };
+};
+
+export const getFriends = async () => {
+  const res = await axiosInstance.get<{
+    message: string;
+    data: {
+      name: string;
+      link: string;
+      avatar: string;
+      description: string;
+      category: string;
+    }[];
+  }>("/friends");
+
+  return res.data.data;
 };

@@ -28,6 +28,7 @@ const AboutGallary: React.FC<{ children: React.ReactNode }> = ({
       },
     });
   }, []);
+
   return (
     <div className="flex h-[280px] w-full overflow-hidden rounded sm:h-[400px]">
       {children}

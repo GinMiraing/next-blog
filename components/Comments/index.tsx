@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { Loader2, MessageSquareIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Image from "next/legacy/image";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -10,7 +10,6 @@ import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { CommentType } from "@/lib/types";
-import { cn, sleep } from "@/lib/utils";
 
 import CommentForm from "./CommentForm";
 import CommentItem from "./CommentItem";

@@ -20,46 +20,6 @@ export const NavbarItems = [
   },
 ];
 
-export const FriendsLinkItems = [
-  {
-    link: "https://blog.scxho.cn",
-    name: "山川行貉",
-    description: "快让我在雪地上撒点儿野.",
-    avatar: "https://cravatar.cn/avatar/24e54d6a6ac9c59d9d5ee44c825b8c0a",
-  },
-  {
-    link: "https://vian.top",
-    name: "Vian",
-    description: "想要的都拥有，得不到的都释怀...",
-    avatar: "https://vian.top/avatar.ico",
-  },
-  {
-    link: "https://irithys.com",
-    name: "山茶花舍",
-    description: "吕楪在记录自己的生活",
-    avatar: "https://cravatar.cn/avatar/a1325a1c3a07e4e611ae91b8b389be2b",
-  },
-  {
-    link: "https://pinlyu.com",
-    name: "频率",
-    description: "风卷过的起点",
-    avatar: "https://pinlyu.com/resources/img/avatar.webp",
-  },
-  {
-    link: "https://www.xiaozonglin.cn",
-    name: "林林杂语",
-    description: "林林在无病呻吟",
-    avatar:
-      "https://thirdqq.qlogo.cn/g?b=sdk&k=BprL2nDXwddtThAKbAFBtw&kti=Y3tljAAAAAE&s=140&t=1644206293",
-  },
-  {
-    link: "https://blog.alm5.cn",
-    name: "林木云",
-    description: "一个记录个人经验的网站",
-    avatar: "https://img.15xd.cn/favicon.png",
-  },
-];
-
 export const Categories = [
   {
     name: "全部",
