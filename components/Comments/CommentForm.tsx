@@ -69,6 +69,11 @@ const CommentForm: React.FC<{
       setRefresh((prev) => !prev);
     } catch (e) {
       console.log(e);
+      setError(
+        "root",
+        { message: "发表评论失败，请重试" },
+        { shouldFocus: false },
+      );
     } finally {
       setLoading(false);
     }

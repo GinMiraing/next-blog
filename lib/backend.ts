@@ -125,63 +125,78 @@ export const getPosts = async (params: {
   page?: number;
   category?: string;
 }) => {
-  const res = await axiosInstance.get<{
-    message: string;
-    data: {
-      posts: {
-        id: number;
+  try {
+    const res = await axiosInstance.get<{
+      message: string;
+      data: {
+        posts: {
+          id: number;
+          title: string;
+          description: string;
+          create_at: string;
+          update_at: string;
+          category: string;
+        }[];
+        total: number;
+      };
+    }>("/posts", {
+      params: {
+        ...params,
+      },
+    });
+
+    return res.data.data;
+  } catch (e) {
+    console.log(e);
+    throw new Error("获取服务器资源失败");
+  }
+};
+
+export const getPostById = async (id: number) => {
+  try {
+    const res = await axiosInstance.get<{
+      message: string;
+      data: {
         title: string;
         description: string;
         create_at: string;
         update_at: string;
+        source_url: string;
         category: string;
-      }[];
-      total: number;
+        likes: 0;
+      };
+    }>(`/posts/${id}`);
+
+    return {
+      title: res.data.data.title,
+      description: res.data.data.description,
+      date: res.data.data.create_at,
+      sourceUrl: res.data.data.source_url,
+      category: res.data.data.category,
+      likes: res.data.data.likes,
     };
-  }>("/posts", {
-    params: {
-      ...params,
-    },
-  });
-
-  return res.data.data;
-};
-
-export const getPostById = async (id: number) => {
-  const res = await axiosInstance.get<{
-    message: string;
-    data: {
-      title: string;
-      description: string;
-      create_at: string;
-      update_at: string;
-      source_url: string;
-      category: string;
-      likes: 0;
-    };
-  }>(`/posts/${id}`);
-
-  return {
-    title: res.data.data.title,
-    description: res.data.data.description,
-    date: res.data.data.create_at,
-    sourceUrl: res.data.data.source_url,
-    category: res.data.data.category,
-    likes: res.data.data.likes,
-  };
+  } catch (e) {
+    console.log(e);
+    throw new Error("获取服务器资源失败");
+  }
 };
 
 export const getFriends = async () => {
-  const res = await axiosInstance.get<{
-    message: string;
-    data: {
-      name: string;
-      link: string;
-      avatar: string;
-      description: string;
-      category: string;
-    }[];
-  }>("/friends");
+  try {
+    const res = await axiosInstance.get<{
+      message: string;
+      data: {
+        name: string;
+        link: string;
+        avatar: string;
+        description: string;
+        category: string;
+      }[];
+    }>("/friends");
 
-  return res.data.data;
+    return res.data.data;
+  } catch (e) {
+    console.log(e);
+    throw new Error("获取服务器资源失败");
+  }
 };
