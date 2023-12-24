@@ -10,7 +10,7 @@ import AboutGallary from "@/components/AboutGallary";
 
 const Comments = dynamic(() => import("@/components/Comments"));
 
-export const revalidate = 60;
+export const revalidate = 60 * 30;
 
 export const metadata: Metadata = {
   title: `${BasicSettings.name} - 关于`,

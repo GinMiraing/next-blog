@@ -18,7 +18,7 @@ import Markdown from "@/components/Markdown";
 
 const Comments = dynamic(() => import("@/components/Comments"));
 
-export const revalidate = 60;
+export const revalidate = 60 * 30;
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const { id } = params;

@@ -1,11 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import Image from "next/legacy/image";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -48,8 +49,17 @@ const Comments: React.FC = () => {
 
   const [refresh, setRefresh] = useState(false);
 
+  const [ref, entry] = useIntersectionObserver({
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
+
   return (
-    <div className="comments space-y-6">
+    <div
+      ref={ref}
+      className="comments space-y-6"
+    >
       <div className="flex items-center justify-between">
         <hr className="w-full border-t border-dashed border-slate-300" />
         <h2 className="mx-4 shrink-0 rounded bg-red-100 px-2 text-center font-medium text-lg">
@@ -60,15 +70,22 @@ const Comments: React.FC = () => {
       <FormProvider {...form}>
         <ReplyPreview />
         <CommentForm setRefresh={setRefresh} />
-        <CommentsList refresh={refresh} />
+        <CommentsList
+          isInView={entry?.isIntersecting || false}
+          refresh={refresh}
+        />
       </FormProvider>
     </div>
   );
 };
 
-const CommentsList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
+const CommentsList: React.FC<{ refresh: boolean; isInView: boolean }> = ({
+  refresh,
+  isInView,
+}) => {
   const pathname = usePathname();
   const { setValue, setFocus } = useFormContext<CommentValue>();
+  const isFirstRender = useRef(true);
 
   const [loading, setLoading] = useState<"wait" | "loading" | "success">(
     "wait",
@@ -116,8 +133,17 @@ const CommentsList: React.FC<{ refresh: boolean }> = ({ refresh }) => {
   };
 
   useEffect(() => {
-    fetchComments();
+    if (!isFirstRender.current) {
+      fetchComments();
+    }
   }, [refresh]);
+
+  useEffect(() => {
+    if (isInView && isFirstRender.current) {
+      fetchComments();
+      isFirstRender.current = false;
+    }
+  }, [isInView]);
 
   if (loading === "wait" || loading === "loading") {
     return (
