@@ -3,61 +3,13 @@
 import { Fancybox } from "@fancyapps/ui";
 import { useWindowScroll } from "@uidotdev/usehooks";
 import { ChevronUp } from "lucide-react";
-import type { MDXComponents } from "mdx/types";
-import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
-import Image from "next/legacy/image";
-import Link from "next/link";
 import { useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 
-const mdxComponents: MDXComponents = {
-  a: ({ href, children }) => (
-    <Link
-      className="text-pink underline-offset-4 hover:underline"
-      href={href as string}
-    >
-      {children}
-    </Link>
-  ),
-  img: ({ src, alt }) => (
-    <Link
-      data-fancybox
-      className="relative block h-60 w-full overflow-hidden rounded bg-gray-50 transition-all hover:brightness-75 sm:h-80"
-      href={src as string}
-    >
-      <Image
-        priority
-        src={`${src}/post_thumb` as string}
-        alt={alt || ""}
-        layout="fill"
-        className="object-cover object-center"
-      />
-    </Link>
-  ),
-
-  h2: ({ children }) => (
-    <h2 className="my-2 inline-block rounded bg-red-100 px-1.5 font-medium text-lg">
-      {children}
-    </h2>
-  ),
-
-  blockquote: ({ children }) => (
-    <blockquote className="my-4 border-l-4 border-pink pl-4">
-      {children}
-    </blockquote>
-  ),
-
-  sup: ({ children }) => <sup className="text-xs">[{children}]</sup>,
-
-  p: ({ children }) => (
-    <p className="my-4 text-justify text-sm/8 sm:text-base/8">{children}</p>
-  ),
-};
-
-const Markdown: React.FC<{ source: MDXRemoteSerializeResult }> = ({
-  source,
-}) => {
+const Markdown: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const [{ x, y }, scrollTo] = useWindowScroll();
 
   useEffect(() => {
@@ -90,12 +42,7 @@ const Markdown: React.FC<{ source: MDXRemoteSerializeResult }> = ({
 
   return (
     <>
-      <div className="markdown">
-        <MDXRemote
-          {...source}
-          components={mdxComponents}
-        />
-      </div>
+      {children}
       <button
         title="返回顶部"
         aria-label="返回顶部"
