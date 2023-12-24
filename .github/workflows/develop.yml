@@ -26,4 +26,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-s          tags: ginmiraing/next-blog:dev
+          tags: ginmiraing/next-blog:dev
