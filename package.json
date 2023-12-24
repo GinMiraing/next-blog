@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 8000",
-    "build": "next build --build-mode=experimental-compile",
+    "build": "next build",
+    "build:no-pre-render": "next build --build-mode=experimental-compile",
     "start": "next start",
     "lint": "next lint"
   },
