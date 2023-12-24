@@ -26,8 +26,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          build-args: |
-            backend_host=${{ secrets.BACKEND_HOST }}
           tags: |
             ginmiraing/next-blog:${{ github.ref_name }}
             ginmiraing/next-blog:latest
