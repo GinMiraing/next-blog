@@ -1,7 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
 
-import { getPosts } from "@/lib/backend";
+import { getPosts } from "@/lib/server";
 
 import Pagination from "@/components/Pagination";
 import Postcard from "@/components/Postcard";
@@ -41,20 +41,12 @@ const StreamPage: React.FC<{
   page: string;
   limit: string;
 }> = async ({ page, limit }) => {
-  const data = await getPosts({
+  const { posts, total } = getPosts({
     limit: parseInt(limit),
     page: parseInt(page),
   });
 
-  const totalPage = Math.ceil(data.total / parseInt(limit));
-
-  const posts = data.posts.map((post) => ({
-    id: post.id,
-    title: post.title,
-    description: post.description,
-    date: post.create_at,
-    category: post.category,
-  }));
+  const totalPage = Math.ceil(total / parseInt(limit));
 
   if (posts.length === 0) {
     return (

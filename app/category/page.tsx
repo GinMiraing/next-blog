@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { getPosts } from "@/lib/backend";
+import { getPosts } from "@/lib/server";
 import { BasicSettings } from "@/lib/setting";
 
 import CategoryChoose from "@/components/CategoryChoose";
@@ -39,17 +39,11 @@ export default async function Page({
 const StreamPage: React.FC<{
   category?: string;
 }> = async ({ category }) => {
-  const data = await getPosts({
+  const { posts } = getPosts({
     limit: 100,
     page: 1,
     category,
   });
-
-  const posts = data.posts.map((post) => ({
-    id: post.id,
-    title: post.title,
-    date: post.create_at,
-  }));
 
   if (posts.length === 0) {
     return (

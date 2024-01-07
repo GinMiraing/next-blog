@@ -120,67 +120,6 @@ export const createComment = async (data: {
   await axiosInstance.post("/comments", data);
 };
 
-export const getPosts = async (params: {
-  limit?: number;
-  page?: number;
-  category?: string;
-}) => {
-  try {
-    const res = await axiosInstance.get<{
-      message: string;
-      data: {
-        posts: {
-          id: number;
-          title: string;
-          description: string;
-          create_at: string;
-          update_at: string;
-          category: string;
-        }[];
-        total: number;
-      };
-    }>("/posts", {
-      params: {
-        ...params,
-      },
-    });
-
-    return res.data.data;
-  } catch (e) {
-    console.log(e);
-    throw new Error("获取服务器资源失败");
-  }
-};
-
-export const getPostById = async (id: number) => {
-  try {
-    const res = await axiosInstance.get<{
-      message: string;
-      data: {
-        title: string;
-        description: string;
-        create_at: string;
-        update_at: string;
-        source_url: string;
-        category: string;
-        likes: 0;
-      };
-    }>(`/posts/${id}`);
-
-    return {
-      title: res.data.data.title,
-      description: res.data.data.description,
-      date: res.data.data.create_at,
-      sourceUrl: res.data.data.source_url,
-      category: res.data.data.category,
-      likes: res.data.data.likes,
-    };
-  } catch (e) {
-    console.log(e);
-    throw new Error("获取服务器资源失败");
-  }
-};
-
 export const getFriends = async () => {
   try {
     const res = await axiosInstance.get<{
