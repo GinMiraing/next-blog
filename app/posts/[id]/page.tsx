@@ -1,17 +1,14 @@
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
-import axios from "axios";
 import { Loader2, Tag } from "lucide-react";
 import type { MDXComponents } from "mdx/types";
-import { MDXRemote } from "next-mdx-remote/rsc";
+import { useMDXComponent } from "next-contentlayer/hooks";
 import dynamic from "next/dynamic";
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React, { Suspense } from "react";
-import rehypeShiki from "rehype-shiki";
-import remarkGfm from "remark-gfm";
 
-import { getPostById } from "@/lib/backend";
+import { getPostById } from "@/lib/server";
 import { BasicSettings } from "@/lib/setting";
 
 import Markdown from "@/components/Markdown";
@@ -101,41 +98,24 @@ const mdxComponents: MDXComponents = {
 const StreamPage: React.FC<{
   id: string;
 }> = async ({ id }) => {
-  const post = await getPostById(parseInt(id));
+  const post = getPostById(parseInt(id));
 
   if (!post) {
     notFound();
   }
 
-  const mdres = await axios.get(`${post.sourceUrl}.mdx`, {
-    headers: {
-      "Content-Type": "text/markdown",
-      referer: "https://blog.zengjunyin.com/",
-    },
-  });
+  const MDXContent = useMDXComponent(post.body.code);
 
   return (
     <div className="min-h-[calc(100vh-10rem)] py-6">
       <div className="animate-fade space-y-6">
         <h1 className="text-center font-medium text-2xl">{post.title}</h1>
         <p className="text-center text-sm">{post.date}</p>
-        {mdres.data && (
-          <Markdown>
-            <div className="markdown">
-              <MDXRemote
-                source={mdres.data}
-                options={{
-                  mdxOptions: {
-                    remarkPlugins: [remarkGfm],
-                    rehypePlugins: [[rehypeShiki, { theme: "monokai" }]],
-                    format: "mdx",
-                  },
-                }}
-                components={mdxComponents}
-              />
-            </div>
-          </Markdown>
-        )}
+        <Markdown>
+          <div className="markdown">
+            <MDXContent components={mdxComponents} />
+          </div>
+        </Markdown>
         <div className="flex items-center space-x-2">
           <Tag className="h-4 w-4" />
           <span className="text-sm">{post.category}</span>
